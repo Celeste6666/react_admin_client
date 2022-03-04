@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LoginForm from '@/components/login/LoginForm';
-import Logo from './images/logo.png';
+import Logo from '@/assets/images/logo.png';
 import './Login.less';
 
 class Login extends Component {

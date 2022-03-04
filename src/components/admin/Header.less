@@ -1,0 +1,52 @@
+.header{
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-evenly;
+  background-color: #fff;
+  &-top,&-bottom{
+    padding: 0 20px;
+  }
+  hr{
+    background-color: @primary-color;
+    margin: 0;
+    width: 100%;
+    height: 2px;
+  }
+  &-bottom{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &-navTab{
+      font-size: 20px;
+      width: 25%;
+      text-align: center;
+      padding: 10px;
+      display: flex;
+      justify-content:center;
+      position: relative;
+      /* 三角形 */
+      &::after{
+        content: '';
+        position: absolute;
+        bottom: -25%;
+        border-top: 15px solid #fff;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+      }
+    }
+    &-time{
+      margin-right: 15px;
+      display:flex;
+      align-items:center;
+      line-height:1.5;
+      img{
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+      }
+    }
+  }
+}

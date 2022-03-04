@@ -23,7 +23,8 @@ module.exports = {
         lessLoaderOptions: {
           lessOptions: {
             modifyVars: {
-              '@primary-color': '#159E9D'
+              '@primary-color': '#159E9D',
+              '@font-size-base': '16px' // 主字号
             },
             javascriptEnabled: true,
           },
