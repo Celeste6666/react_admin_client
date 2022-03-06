@@ -23,8 +23,8 @@ message.config({
 })
 
 function Admin() {
-  const [user, setUser] = useState(getStorage());
-  const [loading, setLoading] = useState(true);
+  const [user, updateUser] = useState(getStorage());
+  const [loading, updateLoading] = useState(true);
 
   const Navigate = useNavigate();
   const {pathname} =useLocation();
@@ -42,8 +42,8 @@ function Admin() {
       }else{
         saveStorage(user);
       }
-      setUser(getStorage())
-      setLoading(false)
+      updateUser(getStorage())
+      updateLoading(false)
     })
     return () => {
       // 清空 async ，否則可能造成內存洩漏
@@ -57,13 +57,13 @@ function Admin() {
       {
       loading ?
       <div>Loading</div>:
-      <Layout style={{height: '100%'}} className="admin">
+      <Layout className="admin">
         <Sider>
           <SideBar/>
         </Sider>
         <Layout>
           <Header />
-          <Content>
+          <Content style={{ padding: '20px 30px'}}>
             <Outlet/>
           </Content>
           <Footer>Footer</Footer>

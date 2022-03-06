@@ -1,7 +1,3 @@
-# 貢獻
-
-<a target="_blank" href="https://icons8.com/icon/80651/summer">Summer</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-
 # 技術使用
 
 - react-create-app：專案管理。
@@ -51,3 +47,18 @@
   - 透過賦予 async function 一個變量名，在銷毀階段時，將 null 賦值給這個變量。
 
 # 學習紀錄 Day03
+
+- 品類管理資料庫設計(Firestore)：
+  ```
+            |          |- name
+            |-- 類A ---|- id: TimeStamop
+            |          |- subCategory - 二級分類
+  category--|
+            |          |- name
+            |-- 類B ---|- id: TimeStamop
+            |          |- subCategory: undefined - 二級分類
+            |
+            |- 一級分類
+  ```
+
+透過判斷 state 中 subCategory 是否為 null (在跳轉到一級列表時，清空 state 中 subCategory ，所以該值會是 null)，來決定畫面顯示的是一級還是二級分類，而非透過路由的變動。

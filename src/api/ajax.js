@@ -1,10 +1,25 @@
-import { auth } from './firbaseInit';
+import { auth, db } from './firbaseInit';
 // Firebase 登入用
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
+
+// 讀取、添加數據
+import {
+  doc,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  addDoc,
+  updateDoc,
+  arrayRemove,
+  arrayUnion,
+  deleteDoc,
+} from 'firebase/firestore'; 
+
 import { message } from 'antd';
 
 import {saveStorage, removeStorage} from '@/utils/storageUtil'
@@ -14,7 +29,7 @@ import {saveStorage, removeStorage} from '@/utils/storageUtil'
 export default function ajax(route, value={}) {  
   return new Promise((resolve, reject) => {
     // 登入
-    if(route === '/login'){
+    if(route === '/login') {
       const {username, password} = value;
       signInWithEmailAndPassword(auth, username, password)
       .then(res=>{
@@ -22,12 +37,12 @@ export default function ajax(route, value={}) {
         resolve(res);
       })
       .catch(err=>{
-        reject('失敗')
+        reject('登入失敗')
         message.error('用戶名或密碼錯誤，請重新輸入')
       })
     }
     // 創建使用者
-    else if(route === '/register'){
+    else if(route === '/register') {
       const {username, password} = value;
       createUserWithEmailAndPassword(auth, username, password)
       .then((res)=>{
@@ -38,9 +53,100 @@ export default function ajax(route, value={}) {
       })
     }
     // 登出
-    else if (route==='/signout'){
-      signOut(auth).then(()=>{
+    else if (route === '/signout') {
+      signOut(auth)
+      .then(()=>{
         removeStorage()
+      })
+      .catch(()=> {
+        reject('登出失敗')
+        message.error('登出失敗，請重新登出。')
+      })
+    }
+    // 取得一級 category 資料
+    else if (route === '/category/get') {
+      getDocs(query(collection(db, 'category'), orderBy('name')))
+      .then(querySnapshot => {
+        let categoryList = [];
+        querySnapshot.forEach(doc => {
+          const { id } = doc;
+          const { name, subCategory } =doc.data()
+          categoryList = [...categoryList, {id, name, subCategory}]
+        })
+        resolve(categoryList)
+      })
+      .catch(err => {
+        reject('獲取資料失敗。')
+        message.error('獲取資料失敗，請刷新頁面。')
+      })
+    }
+    // 修改 category 分類名
+    else if (route === '/category/update') {
+      const { id, name, parentId, newName } = value
+      if(parentId) {
+        // 二級分類修改
+        updateDoc(doc(db, 'category', parentId), {
+          subCategory: arrayRemove({ id, name, parentId }),
+        })
+        .then(() => {
+          updateDoc(doc(db, 'category', parentId), {
+            subCategory: arrayUnion({ id, name: newName, parentId }),
+          })
+        })
+        .then(()=>{
+          resolve({ok: true})
+        })
+        .catch((err)=>{
+          reject('修改失敗，請重新嘗試')
+        })
+      }
+      else {
+        // 一級分類名修改
+        updateDoc(doc(db, 'category', id), {
+          name: newName,
+        })
+        .then(()=>{
+          resolve({ok: true})
+        })
+        .catch((err)=>{
+          reject('修改失敗，請重新嘗試')
+        })
+      }
+    }
+    // 刪除 category 分類
+    else if (route === '/category/delete') {
+      const { id, name, parentId } = value;
+      if(parentId) {
+        // 二級分類修改
+        updateDoc(doc(db, 'category', parentId), {
+          subCategory: arrayRemove({ id, name, parentId }),
+        })
+        .then(()=>{
+          resolve({ok: true});
+        })
+        .catch((err)=>{
+          reject('刪除失敗，請重新嘗試');
+        })
+      }
+      else {
+        // 一級分類名修改
+        deleteDoc(doc(db, 'category', id))
+        .then(()=>{
+          resolve({ok: true});
+        })
+        .catch((err)=>{
+          reject('修改失敗，請重新嘗試');
+        })
+      }
+    }
+    // 添加 category 資料
+    else if (route === '/category/add') {
+      const {name} = value
+      addDoc(collection(db, 'category'), {
+        name,
+      })
+      .then(res => {
+        console.log(res)
       })
     }
   })  

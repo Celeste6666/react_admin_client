@@ -2,15 +2,14 @@ import React, { Fragment } from 'react'
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
-import ajax from '@/api/ajax';
+import {login} from '@/api';
 
 export default function LoginForm () {
-
   const navigate = useNavigate();
 
   const onFinish = async (values)=>{
     // console.log('驗證數據成功符合規則', values);
-    await ajax('/login', values);
+    await login(values);
     // 數據經 Firebase Auth 驗證成功後
     message.success('登入成功')
     navigate('/home', { replace: true });

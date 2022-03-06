@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Modal } from 'antd';
 
-import ajax from '@/api/ajax';
+import { signOut, getWeather } from '@/api';
 import { getGeolocation } from '@/api/openWeather';
 import {menuList} from '@/config/menuList';
 import './Header.less';
@@ -22,7 +22,7 @@ const Header = () => {
 
   // 取得目前所處地點的天氣狀況
   const [weather, updateWeather] = useState({
-    description: '晴',
+    description: '雨',
     icon: '01d',
     id: 0,
     main: ''
@@ -31,9 +31,10 @@ const Header = () => {
   // 在 componentDidMount 的階段執行取得天氣狀況(只需要執行一次)並設定時間器
   useEffect(()=>{
     let getCurrentWeather = async () => {
-      const currentWeather = await getGeolocation();
+      const currentWeather = await getWeather();
       updateWeather(currentWeather.weather[0]);
     }
+    getCurrentWeather()
     const timeId = setInterval(()=> updateTime(getTime()), 60000);
     return () => {
       // 記得清除 async function
@@ -44,17 +45,17 @@ const Header = () => {
 
   // 取得目前路由並得到目前所在頁面的 title
   const Location = useLocation()
-  const [title, changeTitle] = useState('首頁')
+  const [title, updateTitle] = useState('首頁')
   useEffect(()=>{
     const getCurrentTitle = () => {
       menuList.forEach(menu => {
         const {pathname} = Location;
         if(menu.key===pathname){
-          changeTitle(menu.title)
+          updateTitle(menu.title)
           return
         }
         if(menu.children){
-          menu.children.find(child=> child.key === pathname? changeTitle(child.title): '')
+          menu.children.find(child=> child.key === pathname? updateTitle(child.title): '')
           return
         }
       })
@@ -62,7 +63,7 @@ const Header = () => {
     getCurrentTitle()
   }, [Location])
 
-  const Navigate=useNavigate();
+  const Navigate = useNavigate();
   const signOut=(e)=>{
     e.preventDefault();
     Modal.confirm({
@@ -71,7 +72,7 @@ const Header = () => {
       okText: '確定',
       maskClosable: true,
       onOk(){
-        ajax('/signout');
+        signOut();
         Navigate('/login', { replace: true })
       },
     })
