@@ -62,3 +62,5 @@
   ```
 
 透過判斷 state 中 subCategory 是否為 null (在跳轉到一級列表時，清空 state 中 subCategory ，所以該值會是 null)，來決定畫面顯示的是一級還是二級分類，而非透過路由的變動。
+
+- 在使用 antd 的 <Select /> 時，無法在 <Modal /> 取消時，連動 <Select /> 預設值。

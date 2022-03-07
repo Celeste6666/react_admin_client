@@ -57,7 +57,7 @@ function Admin() {
       {
       loading ?
       <div>Loading</div>:
-      <Layout className="admin">
+      <Layout className="admin" style={{minHeight: '100%'}}>
         <Sider>
           <SideBar/>
         </Sider>

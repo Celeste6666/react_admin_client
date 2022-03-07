@@ -20,5 +20,5 @@ export const updateCategory = async (value) => await ajax('/category/update', va
 export const deleteCategory = async (value) => await ajax('/category/delete', value)
 
 // 添加 category 資料
-export const addCategoryData = async (value) => await ajax('/category/add', value)
+export const addCategoryData = async (value) => await ajax('/category/add', value);
 

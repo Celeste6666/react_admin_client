@@ -18,6 +18,7 @@ import {
   arrayRemove,
   arrayUnion,
   deleteDoc,
+  Timestamp,
 } from 'firebase/firestore'; 
 
 import { message } from 'antd';
@@ -141,13 +142,33 @@ export default function ajax(route, value={}) {
     }
     // 添加 category 資料
     else if (route === '/category/add') {
-      const {name} = value
-      addDoc(collection(db, 'category'), {
-        name,
-      })
-      .then(res => {
-        console.log(res)
-      })
+      const {name, parentId} = value;
+      console.log(name, parentId)
+      if(parentId !== 'category'){
+        // 二級添加
+        updateDoc(doc(db, 'category', parentId), {
+          subCategory: arrayUnion(
+            {
+              id: Timestamp.fromDate(new Date()),
+              name,
+              parentId
+            }
+          )
+        })
+        .then(() => {
+          resolve({ok: true});
+        })
+      }
+      else {
+        // 一級添加
+        addDoc(collection(db, 'category'), {
+          name,
+          subCategory: [],
+        })
+        .then(() => {
+          resolve({ok: true});
+        })
+      }
     }
   })  
 }
