@@ -64,3 +64,19 @@
 透過判斷 state 中 subCategory 是否為 null (在跳轉到一級列表時，清空 state 中 subCategory ，所以該值會是 null)，來決定畫面顯示的是一級還是二級分類，而非透過路由的變動。
 
 - 在使用 antd 的 <Select /> 時，無法在 <Modal /> 取消時，連動 <Select /> 預設值。
+
+  - 問題：
+
+    1. CategoryAddModal 在一、二級列表切換時，並不會被卸載在重新加載。
+    2. form.resetFields() 會重新掛載 <Form/> 並將 values 還原到初始值。
+    3. useState() 是個異步函數。
+
+  - 解決：
+
+    從二級列表切換回一級列表時，去執行 updateSubCategoryParentId('category') 後，subCategoryParentId 的值並不會立即修改(在 reder 後才會確定修改完成)，所以在 CategoryAddModal 中被傳入的 subCategoryParentId 值還是原本的值(如 '2vGoGNxNiXia9qpwENYA')，所以此時去執行 form.resetFields() 並沒有任何意義，因為 CategoryAddModal --> Form --> initialValues 的值還是原本的 '2vGoGNxNiXia9qpwENYA' ，而不是新的 'category'。
+
+    在執行執行 updateSubCategoryParentId('category') 後，點擊添加按鈕後，再去執行 form.resetFields() ， CategoryAddModal 中被傳入的 subCategoryParentId 值的確是變動了，但卻無法作用(不清楚原因，因為在 Modal 中取消按鈕中可以正常運作的)。
+
+    既然無法使用 form.resetFields() 去讓表單恢復初始值，那就透過 from.setFieldsValue({...}) 來動態的直接改變 form 表單欄位中的值，讓該表單的內容變成參數設定值。
+
+    antd 中註明 "你不应该用 setState，可以使用 form.setFieldsValue 来动态改变表单值"。

@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Card, Button, Table, Space, Message } from 'antd';
+import { Card, Button, Table, Space, Message, Form } from 'antd';
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons';
 
 import CategoryEditForm from '@/components/category/CategoryEditForm';
@@ -15,20 +15,8 @@ import {
 
 const Category = () => {
   const [loading, updateLoading] = useState(true);
-
-    // 取得所有 Category
-    let getCategoryArr = async () => {
-      const categorys = await getCategoryList();
-      updateCategoryList(categorys);
-      updateLoading(false)
-    }
-  
-    useEffect(()=>{
-      getCategoryArr();
-      return () => {
-        getCategoryArr = null;
-      }
-    }, [])
+  // 用來添加表單內容用的表單
+  const [form] = Form.useForm();
 
   const [title, updateTitle] = useState('一級分類列表');
   // 一級列表
@@ -36,6 +24,23 @@ const Category = () => {
     id: '0',
     name: ''
   }]);
+
+  // 取得所有 Category
+  let getCategoryArr = async () => {
+    const categorys = await getCategoryList();
+    updateCategoryList(categorys);
+    updateLoading(false)
+    return categorys;
+  }
+  
+  useEffect(()=>{
+    getCategoryArr();
+    return () => {
+      getCategoryArr = null;
+    }
+  }, [])
+
+
   // 二級列表
   const [subCategoryList, updateSubCategoryList] = useState(null);
 
@@ -45,16 +50,15 @@ const Category = () => {
   // 回到一級列表
   const backToCategory = (e) => {
     e.preventDefault();
-    updateSubCategoryList(null);
-    updateTitle('一級分類列表');
     updateSubCategoryParentId('category');
+    updateTitle('一級分類列表');
+    updateSubCategoryList(null);
   }
 
   // 取得並顯示二級列表subCategory
   const enterSubCategory = (e, record) => {
     e.preventDefault();
     const { name, subCategory, id } = record;
-    console.group(id)
     const titleNode = (
       <span>
         <Button type="link" style={{padding: '0'}} onClick={backToCategory}>一級分類列表</Button>
@@ -65,16 +69,19 @@ const Category = () => {
     updateTitle(titleNode);
     updateSubCategoryParentId(id);
     updateSubCategoryList(subCategory);
+    updateLoading(false);
   }
 
   // 修改分類內容
   const [editing, updateEditing] = useState('');
-  const [categoryNewName, updateCategoryNewName] = useState('');
+
   const editCategory = async (e, record) => {
     const { id, name } = record;
     e.preventDefault();
     // editing = true 編輯中，點擊儲存後更新資料
+    // 取得表單的新內容
     if (editing === id) {
+      const categoryNewName = form.getFieldValue('editingInputText');
       if (!categoryNewName || name === categoryNewName) {
         updateEditing('');
         return;
@@ -91,7 +98,6 @@ const Category = () => {
         })
         updateCategoryList(newCategory);
         updateEditing('');
-        updateCategoryNewName('');
       } else if (res.ok) {
         // 二級
         const newSubCategory = subCategoryList.map(item => {
@@ -102,7 +108,6 @@ const Category = () => {
         });
         updateSubCategoryList(newSubCategory);
         updateEditing('');
-        updateCategoryNewName('');
       } else {
         // 更新失敗
         Message.error('修改失敗，請重新嘗試！')
@@ -114,10 +119,6 @@ const Category = () => {
     }
   }
 
-  // 取得表單的新內容
-  const getNewCategoryName = (name) => {
-    updateCategoryNewName(name);
-  }
 
   // 刪除分類
   const removeCategory = async (e, record) => {
@@ -141,17 +142,29 @@ const Category = () => {
   // 顯示添加 Modal
   const [isModalVisible, updateModalVisible] = useState(false);
 
-  const addCategoryItem = async (value={name: '', parentId: ''}) => {
-    const {parentId} = value;
-    const res = await addCategoryData(value);
+  const addCategoryItem = async () => {
+    // 取得添加表單內的 newCategoryItemId, newCategoryItemName 的值
+    const {newCategoryItemId, newCategoryItemName} = form.getFieldsValue(true);
+    if(!newCategoryItemName){
+      Message.error('分類名稱必須要輸入！')
+      return
+    }
+    // 帶入表單內的值後執行添加
+    const res = await addCategoryData({parentId: newCategoryItemId, name: newCategoryItemName});
     if(res.ok) {
-      const newListRes = await getCategoryArr();
+      // 取得最新CategoryList的內容
+      const categorys = await getCategoryArr();
       // 如果在二級且目前所在的二級parentId === 所選擇的二級的parentId
-      if(newListRes && subCategoryList !== null && subCategoryParentId === parentId) {}
-      console.log(subCategoryList)
-      const newSubCategory = categoryList.filter(item => item.id === parentId);
-      updateSubCategoryList(newSubCategory.subCategory);
+      if(subCategoryList !== null && subCategoryParentId === newCategoryItemId) {
+        const newSubCategory = categorys.find(item => item.id === newCategoryItemId);
+        updateSubCategoryList(newSubCategory.subCategory);
+      }
+      // 成功添加後，關閉 Modal 並將 form 表單內的資料設定為目前所在列表的 id
       updateModalVisible(false);
+      form.setFieldsValue({
+        newCategoryItemId: subCategoryParentId,
+        newCategoryItemName: ''
+      });
     }
   }
 
@@ -164,7 +177,7 @@ const Category = () => {
         return (
             editing === record.id ?
             <CategoryEditForm {...record}
-            getNewCategoryName={getNewCategoryName} /> :
+            form={form} /> :
             <span>{text}</span>
           )
       }
@@ -183,7 +196,10 @@ const Category = () => {
             subCategoryList === null &&
             <Button
             type="primary"
-            onClick={(e) => enterSubCategory(e, record)}>
+            onClick={(e) => {
+              updateLoading(true);
+              enterSubCategory(e, record)}
+            }>
               查看子分類
             </Button>
           }
@@ -195,14 +211,18 @@ const Category = () => {
     },
   ];
 
-
-
   return (
     <Card title={title}
     extra={
       <Button type="primary"
         icon={<PlusOutlined />}
-        onClick={(e) => updateModalVisible(true) }>
+        onClick={(e) => {
+          // 點擊後將添加表單的值設為目前所在的列表id位置
+          form.setFieldsValue({
+            newCategoryItemId: subCategoryParentId,
+            newCategoryItemName: ''
+          });
+          updateModalVisible(true)}}>
         添加
       </Button>
     }>
@@ -211,7 +231,8 @@ const Category = () => {
         visible={isModalVisible}
         updateModalVisible={updateModalVisible}
         subCategoryParentId={subCategoryParentId}
-        addCategoryItem={addCategoryItem} />
+        addCategoryItem={addCategoryItem}
+        form={form} />
       <Table
         loading={loading}
         columns={columns}

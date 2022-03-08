@@ -74,7 +74,7 @@ export default function ajax(route, value={}) {
           const { name, subCategory } =doc.data()
           categoryList = [...categoryList, {id, name, subCategory}]
         })
-        resolve(categoryList)
+        resolve(categoryList);
       })
       .catch(err => {
         reject('獲取資料失敗。')
@@ -143,7 +143,6 @@ export default function ajax(route, value={}) {
     // 添加 category 資料
     else if (route === '/category/add') {
       const {name, parentId} = value;
-      console.log(name, parentId)
       if(parentId !== 'category'){
         // 二級添加
         updateDoc(doc(db, 'category', parentId), {

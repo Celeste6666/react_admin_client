@@ -8,51 +8,36 @@ const CategoryAddModal = (props) => {
     categoryList,
     visible,
     updateModalVisible,
-    subCategoryParentId,
-    addCategoryItem
+    subCategoryParentId, // 目前所屬類別
+    addCategoryItem,
+    form
   } = props;
-  
-  
-  const [inputText, updateInputText] = useState('');
-  const [chosenId, updateChosenId] = useState('');
-  const [form] = Form.useForm();
-
-  useEffect(() =>{
-    console.log('update')
-    form.resetFields();
-    return ()=>{
-      updateModalVisible(false);
-      console.log('unmount')
-    }
-  },[chosenId, subCategoryParentId])
-
 
   return (
-  <Modal title="Add a New Category"
+  <Modal title="添加分類"
   visible={visible}
   cancelText="取消"
   okText="確認"
   onCancel={() => {
-    console.log('cancel')
     form.resetFields();
     updateModalVisible(false);
   }}
-  onOk={() => {
-    addCategoryItem({parentId: chosenId, name: inputText });
-    updateInputText('')}}
+  onOk={() => addCategoryItem()}
   >
-    <Form layout="vertical" form={form}>
+    <Form layout="vertical"
+      form={form}
+      initialValues={{
+        newCategoryItemId: subCategoryParentId,
+        newCategoryItemName: ''
+    }}>
       <Item
-      name="newCategoryItem"
-      label="分類"
-      rules={[{ required: true, message: '一定要填！' }]}>
+      name="newCategoryItemId"
+      label="所屬分類">
         <Select
           style={{ width: '100%' }}
-          defaultValue={subCategoryParentId}
           showSearch
           optionFilterProp="children"
           filterOption={true}
-          onSelect={(value) => updateChosenId(value)}
         >
           <Option value="category" key="category" >一級分類列表</Option>
           {
@@ -61,9 +46,11 @@ const CategoryAddModal = (props) => {
         </Select>
       </Item>
       <Item
-        label="新分類名"
-        name="newCategoryItemName">
-        <Input defaultValue="" onChange={(e)=>updateInputText(e.target.value)} />
+        label="分類名稱"
+        name="newCategoryItemName"
+        rules={[{ required: true, message: '必須輸入分類名稱！' }]}
+        >
+        <Input />
       </Item>
     </Form>
   </Modal>
