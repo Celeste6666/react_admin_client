@@ -15,14 +15,14 @@ const CategoryAddModal = (props) => {
 
   return (
   <Modal title="添加分類"
-  visible={visible}
-  cancelText="取消"
-  okText="確認"
-  onCancel={() => {
-    form.resetFields();
-    updateModalVisible(false);
-  }}
-  onOk={() => addCategoryItem()}
+    visible={visible}
+    cancelText="取消"
+    okText="確認"
+    onCancel={() => {
+      form.resetFields();
+      updateModalVisible(false);
+    }}
+    onOk={() => addCategoryItem()}
   >
     <Form layout="vertical"
       form={form}

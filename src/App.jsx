@@ -5,6 +5,7 @@ import Login from '@/pages/login/Login';
 import Admin from '@/pages/admin/Admin';
 import Home from '@/pages/home/Home';
 import Product from '@/pages/product/Product';
+import ProductItem from '@/pages/product/ProductItem';
 import Category from '@/pages/category/Category';
 import Role from '@/pages/role/Role';
 import User from '@/pages/user/User';
@@ -20,7 +21,9 @@ export default class App extends Component {
         <Route path="/" element={<Admin/>} >
           <Route path="home" element={<Home />}></Route>
           <Route path="products/category" element={<Category />}></Route>
-          <Route path="products/product" element={<Product />}></Route>
+          <Route path="products/product" element={<Product />}>
+            <Route path=":productId" element={<ProductItem />}></Route>
+          </Route>
           <Route path="role" element={<Role />}></Route>
           <Route path="user" element={<User />}></Route>
           <Route path="charts/pie" element={<Pie />}></Route>

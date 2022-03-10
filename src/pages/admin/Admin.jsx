@@ -27,7 +27,7 @@ function Admin() {
   const [loading, updateLoading] = useState(true);
 
   const Navigate = useNavigate();
-  const {pathname} =useLocation();
+  const {pathname} = useLocation();
   useEffect(() => {
     // 如果直接進入到 / 就會被重定向到 /home
     if(pathname==='/') {

@@ -7,7 +7,7 @@
 - Firebase Auth：使用者資料庫。
 - Firebase Firestore：商品、種類資料庫。
 
-# 學習紀錄 Day01
+# 學習紀錄 01
 
 - 使用 antd 處理樣式：
 
@@ -29,7 +29,7 @@
   1. 必須注意到 antd 的表單送出數據驗證成功事件回調是 onFinish={} 不是 onSubmit，如果表單送出後數據驗證失敗的事件回調為 onFinishFailed={}。
   2. 可以通過 antd 提供的預設 rules 來寫，也可以通過自定義的 validator 來改寫驗證規則。
 
-# 學習紀錄 Day02
+# 學習紀錄 02
 
 - 封裝 AJAX 所有請求：
 
@@ -46,7 +46,7 @@
   - 在 function component 時，在 useEffect() 在 return 一個 fn 中清空。
   - 透過賦予 async function 一個變量名，在銷毀階段時，將 null 賦值給這個變量。
 
-# 學習紀錄 Day03
+# 學習紀錄 03
 
 - 品類管理資料庫設計(Firestore)：
   ```
@@ -80,3 +80,20 @@
     既然無法使用 form.resetFields() 去讓表單恢復初始值，那就透過 from.setFieldsValue({...}) 來動態的直接改變 form 表單欄位中的值，讓該表單的內容變成參數設定值。
 
     antd 中註明 "你不应该用 setState，可以使用 form.setFieldsValue 来动态改变表单值"。
+
+# 學習紀錄 04
+
+- 商品管理資料庫設計(Firestore)：
+  ```
+            |           |- name
+            |-- 商品 A -|- id: Firestore Id
+            |           |- detail
+            |           |- description
+  product --|           |- categoryId
+            |           |- picture
+            |           |- price
+            |           |- status
+            |
+            |
+            |- 商品總覽   |- 個別商品項目內容
+  ```
