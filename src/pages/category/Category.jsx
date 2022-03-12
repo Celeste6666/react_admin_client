@@ -26,17 +26,17 @@ const Category = () => {
   }]);
 
   // 取得所有 Category
-  let getCategoryArr = async () => {
+  let getCategoryArray = async () => {
     const categorys = await getCategoryList();
     updateCategoryList(categorys);
     updateLoading(false)
     return categorys;
   }
-  
+
   useEffect(()=>{
-    getCategoryArr();
+    getCategoryArray();
     return () => {
-      getCategoryArr = null;
+      getCategoryArray = null;
     }
   }, [])
 
@@ -153,7 +153,7 @@ const Category = () => {
     const res = await addCategoryData({parentId: newCategoryItemId, name: newCategoryItemName});
     if(res.ok) {
       // 取得最新CategoryList的內容
-      const categorys = await getCategoryArr();
+      const categorys = await getCategoryArray();
       // 如果在二級且目前所在的二級parentId === 所選擇的二級的parentId
       if(subCategoryList !== null && subCategoryParentId === newCategoryItemId) {
         const newSubCategory = categorys.find(item => item.id === newCategoryItemId);

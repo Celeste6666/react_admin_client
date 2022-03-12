@@ -19,7 +19,9 @@ import {
   arrayUnion,
   deleteDoc,
   Timestamp,
-} from 'firebase/firestore'; 
+  startAt,
+  limit
+} from 'firebase/firestore';
 
 import { message } from 'antd';
 
@@ -27,7 +29,7 @@ import {saveStorage, removeStorage} from '@/utils/storageUtil'
 
 // 通過在封裝一層new Promise() 並在執行後返回一個 resolve||reject
 // 來告訴執行的函數處理驗證結果是成功或失敗
-export default function ajax(route, value={}) {  
+export default function ajax(route, value={}) {
   return new Promise((resolve, reject) => {
     // 登入
     if(route === '/login') {
@@ -71,7 +73,7 @@ export default function ajax(route, value={}) {
         let categoryList = [];
         querySnapshot.forEach(doc => {
           const { id } = doc;
-          const { name, subCategory } =doc.data()
+          const { name, subCategory } = doc.data()
           categoryList = [...categoryList, {id, name, subCategory}]
         })
         resolve(categoryList);
@@ -118,7 +120,7 @@ export default function ajax(route, value={}) {
     else if (route === '/category/delete') {
       const { id, name, parentId } = value;
       if(parentId) {
-        // 二級分類修改
+        // 二級分類刪除
         updateDoc(doc(db, 'category', parentId), {
           subCategory: arrayRemove({ id, name, parentId }),
         })
@@ -169,5 +171,32 @@ export default function ajax(route, value={}) {
         })
       }
     }
-  })  
+    // 取得 product 資料(當前頁面決定顯示資料)
+    else if(route === '/product') {
+      const { pageNum, PageSize } = value;
+      getDocs(query(collection(db, 'product'), orderBy('name'), limit(PageSize)))
+      .then(snapshot => {
+        let productList = [];
+        snapshot.forEach(doc => {
+          const { id } = doc;
+          productList = [...productList, { id, ...doc.data() }]
+        })
+        resolve(productList);
+      }).catch(() => {
+        message.error('無法取得商品資料，請刷新頁面。')
+      })
+    }
+    // 改變 product status
+    else if(route === '/product/status') {
+      const { id, status } = value;
+      updateDoc(doc(db, 'product', id), {
+        "status": status,
+      })
+      .then(()  => {
+        resolve({ok: true})
+      }).catch(() => {
+        message.error('無法更新，請重新嘗試。')
+      })
+    }
+  })
 }

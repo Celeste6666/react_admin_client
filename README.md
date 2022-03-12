@@ -89,6 +89,7 @@
             |-- 商品 A -|- id: Firestore Id
             |           |- detail
             |           |- description
+            |           |- categoryParentId
   product --|           |- categoryId
             |           |- picture
             |           |- price

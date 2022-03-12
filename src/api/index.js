@@ -22,3 +22,8 @@ export const deleteCategory = async (value) => await ajax('/category/delete', va
 // 添加 category 資料
 export const addCategoryData = async (value) => await ajax('/category/add', value);
 
+// 取得 product 的資料
+export const getProductList = async (value = { pageNum, PageSize }) => await ajax('/product', value);
+
+// 更改 product status的資料
+export const changeProductStatus = async (value) => await ajax('/product/status', value);
