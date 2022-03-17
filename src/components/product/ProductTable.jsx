@@ -1,17 +1,21 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link  } from 'react-router-dom';
 import { Table, Button, Space } from 'antd';
-import { changeProductStatus } from '@/api';
+import { getProductList, changeProductStatus } from '@/api';
+
+const pageSize = 5;
 
 const ProductTable = props => {
-  const { productList, loading, updateProductList } = props;
-  const [ btnLoading, updateBtnLoading ] = useState(false);
+  const { loading, productList, updateProductList } = props;
+  const [ btnLoading, updateBtnLoading ] = useState('');
+
+
 
   const changeStatus = async (data) => {
-    updateBtnLoading(true);
     const { id, status } = data;
-   const res =  await changeProductStatus({id, status: !status});
-   if(res.ok) {
+    updateBtnLoading(id);
+    const res =  await changeProductStatus({id, status: !status});
+    if(res.ok) {
     const newList = productList.map(product => {
       if(product.id === id) {
         product.status = !status
@@ -19,9 +23,10 @@ const ProductTable = props => {
       return product
     });
     updateProductList(newList);
-    updateBtnLoading(false);
-   }
+    updateBtnLoading('');
+    }
   }
+
 
   const columns = [
     {
@@ -49,7 +54,7 @@ const ProductTable = props => {
           <Button
             type="primary"
             status={status? 1 : 0}
-            loading={btnLoading}
+            loading={btnLoading && btnLoading === record.id}
             onClick={() => changeStatus(record)}
           >
             {status ?  '下架' : '上架'}
@@ -64,10 +69,10 @@ const ProductTable = props => {
       dataIndex: 'operate',
       render: (text, record) => (
         <Space direction="vertical">
-          <Link to={`/products/product/${record.id}`}>
+          <Link to={`/product/${record.id}`}>
             商品詳情
           </Link>
-          <Link to={`/products/product/addUpdate/${record.id}`}>
+          <Link to={`/product/addUpdate/${record.id}`}>
             修改
           </Link>
         </Space>),
@@ -75,7 +80,8 @@ const ProductTable = props => {
   ];
 
   return (
-    productList ? <Table dataSource={productList} columns={columns} rowKey="id" pagination={{ pageSize: 5 }} loading={loading} /> : ''
+    productList ?
+    <Table dataSource={productList} columns={columns} rowKey="id" pagination={{ pageSize,  }} loading={loading} /> : ''
   )
 }
 

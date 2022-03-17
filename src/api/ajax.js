@@ -1,4 +1,4 @@
-import { auth, db } from './firbaseInit';
+import { auth, db, storage } from './firbaseInit';
 // Firebase 登入用
 import {
   signInWithEmailAndPassword,
@@ -20,8 +20,18 @@ import {
   deleteDoc,
   Timestamp,
   startAt,
-  limit
+  limit,
+  getDoc,
+  where
 } from 'firebase/firestore';
+
+// 上傳圖片
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 import { message } from 'antd';
 
@@ -173,16 +183,25 @@ export default function ajax(route, value={}) {
     }
     // 取得 product 資料(當前頁面決定顯示資料)
     else if(route === '/product') {
-      const { pageNum, PageSize } = value;
-      getDocs(query(collection(db, 'product'), orderBy('name'), limit(PageSize)))
+      const { pageNum, PageSize, searchItem } = value;
+      const { type, content } = searchItem;
+
+      const docRef = content && type === 'name' ?
+      query(collection(db, 'product'), where(type, '>=', content), where(type, '<=', content + '/uf8ff'), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize)) :
+      content && type === 'category' ? query(collection(db, 'product'), where(type, 'array-contains', content), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize)) :
+      query(collection(db, 'product'), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize));
+console.log(docRef)
+      getDocs(docRef)
       .then(snapshot => {
         let productList = [];
         snapshot.forEach(doc => {
           const { id } = doc;
           productList = [...productList, { id, ...doc.data() }]
         })
+console.log(snapshot)
         resolve(productList);
-      }).catch(() => {
+      }).catch((error) => {
+        console.log(error)
         message.error('無法取得商品資料，請刷新頁面。')
       })
     }
@@ -197,6 +216,53 @@ export default function ajax(route, value={}) {
       }).catch(() => {
         message.error('無法更新，請重新嘗試。')
       })
+    }
+    // 上傳圖片並取得圖片位址
+    else if(route === '/product/pictureUpload') {
+      const { name } = value;
+      const storageRef = ref(storage, name);
+      uploadBytes(storageRef, value)
+        .then((snapshot) => {
+          const { bucket, fullPath } = snapshot.metadata;
+          // 要先 return 一個 Promise 才可以用 then 接收
+          return getDownloadURL(ref(storage, `gs://${bucket}/${fullPath}`))
+        })
+        .then(url => {
+          resolve(url);
+        })
+        .catch(err=> console.log(err))
+    }
+    // 刪除圖片
+    else if(route === '/product/pictureRemove') {
+      deleteObject(ref(storage, value)).then(() => {
+        resolve({ ok: true });
+        message.success('成功刪除圖片！')
+      })
+    }
+    // 添加 product 資料(當前頁面決定顯示資料)
+    else if(route === '/product/add') {
+      addDoc(collection(db, 'product'), value)
+        .then((docRef) => {
+          resolve({ok: true, id: docRef.id});
+        })
+        .catch(() => {
+        message.error('出現錯誤，請刷新頁面。')
+      })
+    }
+    // 查看單一商品
+    else if(route === '/product/single') {
+      getDoc(doc(db, 'product', value))
+        .then(doc => {
+          resolve(doc.data())
+        })
+    }
+    // 修改商品內容
+    else if(route === '/product/single/update') {
+      const { id, data } = value
+      updateDoc(doc(db, 'product', id), data)
+        .then(() => {
+          resolve({ ok: true })
+        })
     }
   })
 }

@@ -1,4 +1,4 @@
-import React,{ Fragment, useState } from 'react';
+import React,{ Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'antd';
 
@@ -11,6 +11,7 @@ const {SubMenu, Item} = Menu;
 
 const Sidebar = () => {
   const { pathname } = useLocation();
+
   // 創建標籤，透過參數解構賦值使程式碼變簡潔
   const createMenuItem = ({key, title, icon}) => (
     <Item key={key} icon={icon}>
@@ -24,18 +25,36 @@ const Sidebar = () => {
     </SubMenu>
   )
 
-  
+  const [selectedKey, updateSelectedKey] = useState('');
+  const [openKey, updateOpenKey] = useState('');
+
   const findOpenKey = () => {
-    const req = /^[\\/][A-Z0-9]+/gi;
-    return pathname.match(req)[0] || ''
+    menuList.forEach(menu => {
+      // 如果 menu.key 的內容包含了 pathname 的內容，該 menu 就是被選中的 ==> 針對父物件
+      if (pathname.includes(menu.key)){
+        updateSelectedKey(menu.key);
+      }
+      // 判斷 pathname 是否包含子物件 key
+      else if(!pathname.includes(menu.key) && menu.children) {
+        menu.children.forEach(child => {
+          if (pathname.includes(child.key)){
+            updateOpenKey(menu.key);
+            updateSelectedKey(child.key);
+          }
+        })
+      }
+    })
   }
-  const [openKey, changeOpenKey] = useState(findOpenKey());
 
   // 一次只打開一個子選單
   const onOpenKeyChange = (openKey)=>{
     const {length} = openKey;
-    changeOpenKey(openKey[length-1])
+    updateOpenKey(openKey[length-1])
   }
+
+  useEffect(() => {
+    findOpenKey();
+  }, [pathname])
 
   return (
     <Fragment>
@@ -48,7 +67,7 @@ const Sidebar = () => {
         theme="dark"
         mode="inline"
         openKeys={[openKey]}
-        selectedKeys={[pathname]}
+        selectedKeys={[selectedKey]}
         onOpenChange={onOpenKeyChange}
       >
         {/* 利用 menu.children 來判斷是否有子標籤 */}

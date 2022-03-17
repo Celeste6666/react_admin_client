@@ -6,6 +6,7 @@
 - antd：UI 組件庫。
 - Firebase Auth：使用者資料庫。
 - Firebase Firestore：商品、種類資料庫。
+- Firebase Storage：儲存圖片用。
 
 # 學習紀錄 01
 
@@ -98,3 +99,8 @@
             |
             |- 商品總覽   |- 個別商品項目內容
   ```
+
+- 想讓在相同樣式的按鈕其中一個可以在特定時刻顯示 loading 狀態，此時不可以單純將 loading 設為 true ，這樣會變成所有按鈕都會呈現 loading 喔！
+透過設置一個 loading 狀態，並將該 loading 的值設為要呈現 loading 的 id ，最後通過比較該 loading 的值是否與該按鈕自帶的 id 值相等，來決定是哪個按鈕處於 loading 。
+
+- react-draft-wysiwyg 套件：富文本編輯器。

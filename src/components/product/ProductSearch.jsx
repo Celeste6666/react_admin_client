@@ -5,32 +5,25 @@ const { Item } = Form;
 const { Option } = Select;
 
 const ProductSearch = (props) => {
-  const { form } = props;
+  const { form, getSearchText } = props;
   return (
   <Form
     form={form}
     layout="inline"
     initialValues={{
-      price: {
-        number: 0,
-        currency: 'rmb',
-      },
+      type: "name",
+      content: ''
     }}
+    onFinish={() => { getSearchText() }}
   >
-    <Item
-      name="search"
-    >
-      <Select
-        defaultValue="name"
-      >
+    <Item name="type">
+      <Select>
         <Option value="name">按名稱搜尋</Option>
         <Option value="category">按類別搜尋</Option>
       </Select>
     </Item>
-    <Item>
-      <Input type="text"
-        placeholder="關鍵字"
-      />
+    <Item name="content">
+      <Input type="text" placeholder="關鍵字" />
     </Item>
     <Item>
       <Button type="primary" htmlType="submit">

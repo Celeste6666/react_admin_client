@@ -23,12 +23,12 @@ export const menuList = [
     children: [
       {
         title: '品類管理',
-        key: '/products/category',
+        key: '/category',
         icon: <ReconciliationOutlined />,
       },
       {
         title: '商品管理',
-        key: '/products/product',
+        key: '/product',
         icon: <ShopOutlined />,
       }
     ]
@@ -50,17 +50,17 @@ export const menuList = [
     children: [
       {
         title: '柱狀圖',
-        key: '/charts/bar',
+        key: '/bar',
         icon: <BarChartOutlined />,
       },
       {
         title: '折線圖',
-        key: '/charts/line',
+        key: '/line',
         icon: <LineChartOutlined />,
       },
       {
         title: '圓餅圖',
-        key: '/charts/pie',
+        key: '/pie',
         icon: <PieChartOutlined />,
       }
     ]

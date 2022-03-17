@@ -21,16 +21,16 @@ export default class App extends Component {
       <Routes>
         <Route path="/" element={<Admin/>} >
           <Route path="home" element={<Home />}></Route>
-          <Route path="products/category" element={<Category />}></Route>
-          <Route path="products/product" element={<Product />}>
+          <Route path="category" element={<Category />}></Route>
+          <Route path="product" element={<Product />}>
             <Route path=":productId" element={<ProductItem />}></Route>
             <Route path="addUpdate/:productId" element={<ProductAddUpdate />}></Route>
           </Route>
           <Route path="role" element={<Role />}></Route>
           <Route path="user" element={<User />}></Route>
-          <Route path="charts/pie" element={<Pie />}></Route>
-          <Route path="charts/line" element={<Line />}></Route>
-          <Route path="charts/bar" element={<Bar />}></Route>
+          <Route path="pie" element={<Pie />}></Route>
+          <Route path="line" element={<Line />}></Route>
+          <Route path="bar" element={<Bar />}></Route>
         </Route>
         <Route path="/login" element={<Login/>} ></Route>
       </Routes>

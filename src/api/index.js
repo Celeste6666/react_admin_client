@@ -23,7 +23,22 @@ export const deleteCategory = async (value) => await ajax('/category/delete', va
 export const addCategoryData = async (value) => await ajax('/category/add', value);
 
 // 取得 product 的資料
-export const getProductList = async (value = { pageNum, PageSize }) => await ajax('/product', value);
+export const getProductList = async ( pageNum = 1, PageSize = 5,searchItem = { type: '', content: '' }) => await ajax('/product', {pageNum, PageSize, searchItem});
 
 // 更改 product status的資料
 export const changeProductStatus = async (value) => await ajax('/product/status', value);
+
+// 新增 product
+// 新增 product 圖片
+export const addProductPicture = async (file) => await ajax('/product/pictureUpload', file);
+
+// 刪除圖片
+export const removeProductPicture = async (name) => await ajax('/product/pictureRemove', name);
+
+// 添加商品
+export const addProduct = async (value) => await ajax('/product/add', value);
+
+// 取得單一商品資料
+export const getSingleProduct = async (id) => await ajax('/product/single', id);
+
+export const updateSingleProduct = async (value) => await ajax('/product/single/update', value);

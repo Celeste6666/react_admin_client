@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useParams  } from 'react-router-dom';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, Outlet, useParams, useNavigate } from 'react-router-dom';
 import { Card, Form, Button } from 'antd';
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
-import { getProductList } from '@/api';
 import ProductSearch from '@/components/product/ProductSearch';
 import ProductTable from '@/components/product/ProductTable';
+import { getProductList } from '@/api';
 
 
 const Product = () => {
   // 用 productId 來判斷目前是在商品總覽頁面(<ProductCard />)還是個別商品頁面(<Outlet/>)
   const { productId } = useParams();
+  const Navigate = useNavigate();
+  const [ form ] = Form.useForm();
+
+  const backToProduct = () => {
+    Navigate('/product');
+  }
 
   const [ loading, updateLoading ] = useState(true);
-  const [ form ] = Form.useForm();
   const [ productList, updateProductList ] = useState([{
     id: '',
     categoryId: '',
@@ -26,8 +31,10 @@ const Product = () => {
     status: false,
   }]);
 
-  let getProductArray = async () => {
-    const products = await getProductList();
+  // 取得指定頁面商品
+  let getProductArray = async (pageNum = 1, pageSize = 5) => {
+    const searchItem = form.getFieldsValue(true);
+    const products = await getProductList(pageNum, pageSize, searchItem);
     updateProductList(products);
     updateLoading(false);
   }
@@ -35,22 +42,22 @@ const Product = () => {
   useEffect(() => {
     getProductArray()
     return () => {
-      getProductArray = null
+      getProductArray = null;
     }
   }, [])
 
-
   return (
-    <Card title={ productId ?
-      <Button type="text" icon={<ArrowLeftOutlined />}></Button> :
-      <ProductSearch form={form} />}
+    <Card title={
+      productId ?
+      <Button type="text" icon={<ArrowLeftOutlined />} onClick={backToProduct}></Button> :
+      <ProductSearch form={form} getSearchText={getProductArray} />}
       extra={
-          productId ?
-          '':
-          <Button>
-          <Link type="primary" to={`/products/product/addUpdate/newProduct`}
-            icon={<PlusOutlined />}>
-              添加商品
+        productId ?
+        '':
+        <Button type="primary" icon={<PlusOutlined />}>
+          <Link to={`/products/product/addUpdate/newProduct`}
+          style={{color: 'white'}}>
+            添加商品
           </Link>
         </Button>
       }
@@ -59,10 +66,9 @@ const Product = () => {
         productId ?
         <Outlet/> :
         <ProductTable
-        productList={productList}
         loading={loading}
-        updateProductList={updateProductList}
-        />
+        productList={productList}
+        updateProductList={updateProductList} />
       }
     </Card>
   );
