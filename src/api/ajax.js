@@ -19,8 +19,6 @@ import {
   arrayUnion,
   deleteDoc,
   Timestamp,
-  startAt,
-  limit,
   getDoc,
   where
 } from 'firebase/firestore';
@@ -183,14 +181,15 @@ export default function ajax(route, value={}) {
     }
     // 取得 product 資料(當前頁面決定顯示資料)
     else if(route === '/product') {
-      const { pageNum, PageSize, searchItem } = value;
+      // pageNum, PageSize 可以用來取得分頁資料
+      const { searchItem } = value;
       const { type, content } = searchItem;
 
       const docRef = content && type === 'name' ?
-      query(collection(db, 'product'), where(type, '>=', content), where(type, '<=', content + '/uf8ff'), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize)) :
-      content && type === 'category' ? query(collection(db, 'product'), where(type, 'array-contains', content), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize)) :
-      query(collection(db, 'product'), orderBy('name'),startAt((pageNum - 1) * PageSize), limit(PageSize));
-console.log(docRef)
+      query(collection(db, 'product'), where(type, '>=', content), where(type, '<=', content + '/uf8ff'), orderBy('name')) :
+      content && type === 'category' ? query(collection(db, 'product'), where(type, 'array-contains', content), orderBy('name')) :
+      query(collection(db, 'product'), orderBy('name'));
+
       getDocs(docRef)
       .then(snapshot => {
         let productList = [];
@@ -198,7 +197,7 @@ console.log(docRef)
           const { id } = doc;
           productList = [...productList, { id, ...doc.data() }]
         })
-console.log(snapshot)
+
         resolve(productList);
       }).catch((error) => {
         console.log(error)
@@ -263,6 +262,58 @@ console.log(snapshot)
         .then(() => {
           resolve({ ok: true })
         })
+    }
+    // 取得角色資料
+    else if(route === '/role') {
+      getDocs(query(collection(db, 'role'), orderBy('name')))
+      .then(snapshot => {
+        let roleList = [];
+        snapshot.forEach(doc => {
+          const { id } = doc;
+          roleList = [...roleList, { id, ...doc.data() }]
+        })
+
+        resolve(roleList);
+      }).catch((error) => {
+        message.error('無法取得商品資料，請刷新頁面。')
+      })
+    }
+    // 創建角色
+    else if(route === '/role/add') {
+      addDoc(collection(db, 'role'), {
+        name: value,
+        created_At: Timestamp.fromDate(new Date()),
+        authorization_At: '',
+        authorizer: '',
+        authority: [],
+      })
+      .then((docRef) => {
+        resolve({ok: true});
+      })
+      .catch(() => {
+      message.error('出現錯誤，請刷新頁面。')
+    })
+    }
+    // 更新角色權限
+    else if(route === '/role/update/authority') {
+      const { id, authority } = value;
+      let authorizer = ''
+      const user = auth.currentUser;
+      if (user !== null) {
+        authorizer = user.displayName;
+      }
+      console.log(authorizer)
+      updateDoc(doc(db, 'role', id), {
+        authorization_At: Timestamp.fromDate(new Date()),
+        authorizer: '',
+        authority,
+      })
+      .then(() => {
+        resolve({ok: true});
+      })
+      .catch(() => {
+        message.error('出現錯誤，請刷新頁面。')
+    })
     }
   })
 }

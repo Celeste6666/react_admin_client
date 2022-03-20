@@ -5,6 +5,8 @@ import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import CategoryEditForm from '@/components/category/CategoryEditForm';
 import CategoryAddModal from '@/components/category/CategoryAddModal';
 
+import { PAGE_SIZE } from '@/utils/constant';
+
 import {
   getCategoryList,
   updateCategory,
@@ -239,7 +241,7 @@ const Category = () => {
         dataSource={subCategoryList === null ? categoryList : subCategoryList}
         bordered
         rowKey="id"
-        pagination={{showQuickJumper: true, defaultPageSize: 5 }}
+        pagination={{showQuickJumper: true, pageSize: PAGE_SIZE }}
       />
   </Card>
   );

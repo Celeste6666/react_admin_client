@@ -42,3 +42,12 @@ export const addProduct = async (value) => await ajax('/product/add', value);
 export const getSingleProduct = async (id) => await ajax('/product/single', id);
 
 export const updateSingleProduct = async (value) => await ajax('/product/single/update', value);
+
+// 取得角色資料
+export const getRoleList = async () => await ajax('/role');
+
+// 創建角色資料
+export const addRoleList = async (name) => await ajax('/role/add', name);
+
+// 更改 role authority 的資料
+export const changeRoleAuthority = async (value) => await ajax('/role/update/authority', value);

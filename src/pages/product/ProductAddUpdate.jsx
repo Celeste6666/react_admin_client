@@ -18,7 +18,7 @@ import {
   addProduct,
   addProductPicture,
   getSingleProduct,
-  updateSingleProduct
+  updateSingleProduct,
 } from '@/api';
 
 import ProductUpload from '@/components/product/ProductUpload';
@@ -87,10 +87,10 @@ const ProductAddUpdate = props => {
     // 添加頁面
     else {
       value.status = false; // 預設都為未上架
-      const { ok, id} = await addProduct(value);
+      const { ok, id } = await addProduct(value);
       if(ok) {
         message.success('成功添加！')
-        Navigate(`/products/product/addUpdate/${id}`)
+        Navigate(`/product/addUpdate/${id}`)
       }
     }
   }

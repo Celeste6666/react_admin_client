@@ -1,15 +1,12 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Link  } from 'react-router-dom';
 import { Table, Button, Space } from 'antd';
-import { getProductList, changeProductStatus } from '@/api';
-
-const pageSize = 5;
+import { changeProductStatus } from '@/api';
+import { PAGE_SIZE } from '@/utils/constant';
 
 const ProductTable = props => {
   const { loading, productList, updateProductList } = props;
   const [ btnLoading, updateBtnLoading ] = useState('');
-
-
 
   const changeStatus = async (data) => {
     const { id, status } = data;
@@ -81,7 +78,7 @@ const ProductTable = props => {
 
   return (
     productList ?
-    <Table dataSource={productList} columns={columns} rowKey="id" pagination={{ pageSize,  }} loading={loading} /> : ''
+    <Table dataSource={productList} columns={columns} rowKey="id" pagination={{ pageSize: PAGE_SIZE,  }} loading={loading} /> : ''
   )
 }
 

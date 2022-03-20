@@ -85,6 +85,7 @@
 # 學習紀錄 04
 
 - 商品管理資料庫設計(Firestore)：
+
   ```
             |           |- name
             |-- 商品 A -|- id: Firestore Id
@@ -101,6 +102,26 @@
   ```
 
 - 想讓在相同樣式的按鈕其中一個可以在特定時刻顯示 loading 狀態，此時不可以單純將 loading 設為 true ，這樣會變成所有按鈕都會呈現 loading 喔！
-透過設置一個 loading 狀態，並將該 loading 的值設為要呈現 loading 的 id ，最後通過比較該 loading 的值是否與該按鈕自帶的 id 值相等，來決定是哪個按鈕處於 loading 。
+  透過設置一個 loading 狀態，並將該 loading 的值設為要呈現 loading 的 id ，最後通過比較該 loading 的值是否與該按鈕自帶的 id 值相等，來決定是哪個按鈕處於 loading 。
 
-- react-draft-wysiwyg 套件：富文本編輯器。
+- react-draft-wysiwyg 套件(what you what yot get)：富文本編輯器。
+
+- React 中為 DOM 提供一個專門的屬性 `dangerouslySetInnerHTML` ，用來替換 innerHTML 的功能。
+  <span dangerouslySetInnerHTML={{__html: detail}}></span>
+  `dangerouslySetInnerHTML` 接收的值為一個屬性 `__html: 值` 的物件。
+
+# 學習紀錄 05
+
+```
+          |           |- name
+          |-- 角色 A -|- id: Firestore Id
+   role --|           |- authority: [] (權限)
+          |           |- authorizer (開啟權限的人)
+          |           |- authorization_At
+          |           |- created_At
+          |
+          |
+          |- 角色總覽   |- 個別角色內容
+```
+
+- antd Modal 中有一個屬性 destroyOnClose 可以在 Modal 被關閉時銷毀 Modal 裡的子元素，如此在重新開啟時就會使 Modal 中的元素被重新渲染而使用 defaultXXX 的預設值。

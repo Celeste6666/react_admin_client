@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useParams, useNavigate } from 'react-router-dom';
 import { Card, Form, Button } from 'antd';
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -13,10 +13,6 @@ const Product = () => {
   const { productId } = useParams();
   const Navigate = useNavigate();
   const [ form ] = Form.useForm();
-
-  const backToProduct = () => {
-    Navigate('/product');
-  }
 
   const [ loading, updateLoading ] = useState(true);
   const [ productList, updateProductList ] = useState([{
@@ -39,6 +35,12 @@ const Product = () => {
     updateLoading(false);
   }
 
+  // 回到產品頁面
+  const backToProduct = () => {
+    Navigate('/product');
+    getProductArray()
+  }
+
   useEffect(() => {
     getProductArray()
     return () => {
@@ -55,7 +57,7 @@ const Product = () => {
         productId ?
         '':
         <Button type="primary" icon={<PlusOutlined />}>
-          <Link to={`/products/product/addUpdate/newProduct`}
+          <Link to={`/product/addUpdate/newProduct`}
           style={{color: 'white'}}>
             添加商品
           </Link>
@@ -64,7 +66,7 @@ const Product = () => {
     >
       {
         productId ?
-        <Outlet/> :
+        <Outlet /> :
         <ProductTable
         loading={loading}
         productList={productList}

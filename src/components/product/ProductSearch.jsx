@@ -11,14 +11,14 @@ const ProductSearch = (props) => {
     form={form}
     layout="inline"
     initialValues={{
-      type: "name",
+      type: "category",
       content: ''
     }}
     onFinish={() => { getSearchText() }}
   >
     <Item name="type">
       <Select>
-        <Option value="name">按名稱搜尋</Option>
+        <Option value="name" disabled>按名稱搜尋</Option>
         <Option value="category">按類別搜尋</Option>
       </Select>
     </Item>
