@@ -17,7 +17,7 @@ export const getCategoryList = async () => await ajax('/category/get');
 export const updateCategory = async (value) => await ajax('/category/update', value)
 
 // 刪除 category 分類名
-export const deleteCategory = async (value) => await ajax('/category/delete', value)
+export const deleteCategory = async (value) => await ajax('/category/remove', value)
 
 // 添加 category 資料
 export const addCategoryData = async (value) => await ajax('/category/add', value);
@@ -47,7 +47,19 @@ export const updateSingleProduct = async (value) => await ajax('/product/single/
 export const getRoleList = async () => await ajax('/role');
 
 // 創建角色資料
-export const addRoleList = async (name) => await ajax('/role/add', name);
+export const createRole = async (name) => await ajax('/role/add', name);
 
 // 更改 role authority 的資料
 export const changeRoleAuthority = async (value) => await ajax('/role/update/authority', value);
+
+// 取得角色資料
+export const getUserList = async () => await ajax('/user');
+
+// 創建使用者資料
+export const createUser = async (value) => await ajax('/user/add', value);
+
+// 修改使用者資料
+export const changeUser = async (value) => await ajax('/user/update', value)
+
+// 刪除使用者資料
+export const removeUser = async (value) => await ajax('/user/remove', value)

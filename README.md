@@ -68,7 +68,7 @@
 
   - 問題：
 
-    1. CategoryAddModal 在一、二級列表切換時，並不會被卸載在重新加載。
+    1. CategoryAddModal 在一、二級列表切換時，並不會被卸載在重新加載。 --- 解決方案 2 請參考 學習紀錄 05。
     2. form.resetFields() 會重新掛載 <Form/> 並將 values 還原到初始值。
     3. useState() 是個異步函數。
 
@@ -125,3 +125,11 @@
 ```
 
 - antd Modal 中有一個屬性 destroyOnClose 可以在 Modal 被關閉時銷毀 Modal 裡的子元素，如此在重新開啟時就會使 Modal 中的元素被重新渲染而使用 defaultXXX 的預設值。
+
+- <Modal /> 和 Form 一起配合使用时，设置 destroyOnClose 也不会在 Modal 关闭时销毁表单字段数据，需要设置 <Form preserve={false} />。
+
+# 學習紀錄 06
+
+在 React 中多次調用 useState() 去更改 state 的值，但也因此會去多次渲染頁面(調用一次 useState() 的更新資料就會重新渲染畫面。)
+
+解決方法： [使用 useState 多次渲染问题](https://juejin.cn/post/7042319659881742343)、[React Hooks useEffect 多个依赖批量操作](https://juejin.cn/post/6994085055559630879)。

@@ -7,55 +7,12 @@ import { authList } from '@/config/authList'
 
 const { Item } = Form;
 
-const treeData = [
-  {
-    title: '平台權限',
-    key: '/all',
-    children: [
-      {
-        title: 'parent 1-0',
-        key: '0-0-0',
-        disabled: true,
-        children: [
-          {
-            title: 'leaf',
-            key: '0-0-0-0',
-            disableCheckbox: true,
-          },
-          {
-            title: 'leaf',
-            key: '0-0-0-1',
-          },
-        ],
-      },
-      {
-        title: 'parent 1-1',
-        key: '0-0-1',
-        children: [
-          {
-            title: (
-              <span
-                style={{
-                  color: '#1890ff',
-                }}
-              >
-                sss
-              </span>
-            ),
-            key: '0-0-1-0',
-          },
-        ],
-      },
-    ],
-  },
-];
-
 const AuthForm = props => {
-  const { role:{ name, authority }, updateCheckedKeys } = props;
+  const { role:{ name, authority }, setState } = props;
 
 
   const onCheck = (checkedKeys) => {
-    updateCheckedKeys(checkedKeys);
+    setState({ checkedKeys })
   };
 
   return (

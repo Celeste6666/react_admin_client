@@ -20,7 +20,8 @@ import {
   deleteDoc,
   Timestamp,
   getDoc,
-  where
+  where,
+  setDoc
 } from 'firebase/firestore';
 
 // 上傳圖片
@@ -33,7 +34,7 @@ import {
 
 import { message } from 'antd';
 
-import {saveStorage, removeStorage} from '@/utils/storageUtil'
+import { getStorage, saveStorage, removeStorage} from '@/utils/storageUtil'
 
 // 通過在封裝一層new Promise() 並在執行後返回一個 resolve||reject
 // 來告訴執行的函數處理驗證結果是成功或失敗
@@ -42,13 +43,26 @@ export default function ajax(route, value={}) {
     // 登入
     if(route === '/login') {
       const {username, password} = value;
+      let saveData;
       signInWithEmailAndPassword(auth, username, password)
       .then(res=>{
-        saveStorage(res.user);
-        resolve(res);
+        const { user: { uid } } = res
+        return getDoc(doc(db, 'user', uid))
+      })
+      .then((userDoc) => {
+        const data = userDoc.data()
+        saveData = {id: userDoc.id, ...data};
+        console.log(data)
+        return getDoc(doc(db, 'role', data.roleId))
+      })
+      .then((roleDoc) => {
+        saveData = {...saveData, ...roleDoc.data()}
+        saveStorage(saveData);
+        resolve({ ok: true });
       })
       .catch(err=>{
         reject('登入失敗')
+        console.log(err)
         message.error('用戶名或密碼錯誤，請重新輸入')
       })
     }
@@ -125,7 +139,7 @@ export default function ajax(route, value={}) {
       }
     }
     // 刪除 category 分類
-    else if (route === '/category/delete') {
+    else if (route === '/category/remove') {
       const { id, name, parentId } = value;
       if(parentId) {
         // 二級分類刪除
@@ -296,17 +310,12 @@ export default function ajax(route, value={}) {
     }
     // 更新角色權限
     else if(route === '/role/update/authority') {
-      const { id, authority } = value;
-      let authorizer = ''
-      const user = auth.currentUser;
-      if (user !== null) {
-        authorizer = user.displayName;
-      }
-      console.log(authorizer)
+      const { id, authority, authorizer } = value;
       updateDoc(doc(db, 'role', id), {
         authorization_At: Timestamp.fromDate(new Date()),
         authorizer: '',
         authority,
+        authorizer
       })
       .then(() => {
         resolve({ok: true});
@@ -314,6 +323,94 @@ export default function ajax(route, value={}) {
       .catch(() => {
         message.error('出現錯誤，請刷新頁面。')
     })
+    }
+    // 取得所有使用者列表
+    else if(route === '/user') {
+      getDocs(query(collection(db, 'user'), orderBy('displayName')))
+      .then(snapshot => {
+        let userList = [];
+        snapshot.forEach(doc => {
+          const { id } = doc;
+          userList = [...userList, { id, ...doc.data() }]
+        })
+        resolve(userList);
+      }).catch((error) => {
+        message.error('無法取得用戶資料，請刷新頁面。')
+      })
+    }
+    // 添加使用者列表
+    else if(route === '/user/add') {
+      // 先在 Authentication 中創建使用者
+      // 再將 Authentication 中產生的 uid 當作 firestore/user 的 id
+      const { email, displayName, phoneNumber, roleId } = value;
+      const reg = /[a-z0-9]+(?=@)/gi;
+      // 預設密碼
+      const psd = email.match(reg).join();
+      let user;
+      createUserWithEmailAndPassword(auth, email, psd)
+      .then((res) => {
+        user = res.user;
+        const { uid, metadata: { creationTime } } = user;
+        return setDoc(doc(db, 'user', uid), {
+          email,
+          displayName,
+          phoneNumber,
+          created_At: Timestamp.fromDate(new Date(creationTime)),
+          roleId,
+          user: JSON.stringify(user)
+        })
+      })
+      .then(() => resolve({ ok: true, id: user.uid}))
+      .catch(() => message.error('發生錯誤，請重新創建！'))
+    }
+    // 修改使用者
+    else if(route === '/user/update') {
+      const { id, data: {displayName, email, phoneNumber, roleId} } = value;
+      let saveData;
+      updateDoc(doc(db, 'user', id), {
+        displayName,
+        email,
+        phoneNumber,
+        roleId
+      })
+      .then(() => {
+        const loginUser = getStorage();
+        // 如果正在修改的這個ID跟登陸的使用者相同就必須更新內存的資料
+        if (loginUser.id === id) {
+          saveData = {
+            ...loginUser,
+            displayName,
+            email,
+            phoneNumber,
+            roleId
+          }
+          message.warn('請刷新頁面！')
+          return getDoc(db, 'role', roleId)
+        }
+        else {
+          resolve({ ok: true });
+        }
+      })
+      .then((roleDoc) => {
+        saveData = {
+          ...saveData,
+          ...roleDoc.data()
+        };
+        saveStorage(saveData);
+      })
+      .catch((err) => {
+        message.error('發生錯誤，請重新修改！')
+      })
+    }
+    // 刪除使用者
+    else if(route === '/user/remove') {
+      deleteDoc(doc(db, 'user', value))
+      .then(() => {
+        resolve({ ok: true })
+      })
+      .catch((err) => {
+        message.error('出現問題，請重新刪除。')
+      })
     }
   })
 }

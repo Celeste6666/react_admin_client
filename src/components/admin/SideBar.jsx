@@ -4,6 +4,7 @@ import { Menu } from 'antd';
 
 // 利用陣列讓 menu 的程式碼變得比較簡潔
 import { menuList } from '@/config/menuList';
+import { getStorage } from '@/utils/storageUtil';
 import Logo from '@/assets/images/logo.png';
 import './SideBar.less';
 
@@ -11,13 +12,18 @@ const {SubMenu, Item} = Menu;
 
 const Sidebar = () => {
   const { pathname } = useLocation();
+  const user = getStorage();
 
   // 創建標籤，透過參數解構賦值使程式碼變簡潔
-  const createMenuItem = ({key, title, icon}) => (
-    <Item key={key} icon={icon}>
-      <Link to={key}>{title}</Link>
-    </Item>
-  );
+  const createMenuItem = ({key, title, icon}) => {
+    if(user.authority.includes(key)){
+      return (
+        <Item key={key} icon={icon}>
+          <Link to={key}>{title}</Link>
+        </Item>
+      )
+    }
+  };
   // 創建子標籤，子標籤中的標籤可以透過createMenuItem()在去循環創建
   const createSubMenu = ({key, title, icon}) => (children) => (
     <SubMenu key={key} title={title} icon={icon}>

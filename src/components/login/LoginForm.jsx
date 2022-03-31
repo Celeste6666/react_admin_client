@@ -9,14 +9,16 @@ export default function LoginForm () {
 
   const onFinish = async (values)=>{
     // console.log('驗證數據成功符合規則', values);
-    await login(values);
-    // 數據經 Firebase Auth 驗證成功後
-    message.success('登入成功')
-    navigate('/home', { replace: true });
+    const res = await login(values);
+    if(res.ok){
+      // 數據經 Firebase Auth 驗證成功後
+      message.success('登入成功')
+      navigate('/home', { replace: true });
+    }
   }
 
   const validatePwd = (rule, value) => {
-    if(!value || value.length!== 9){
+    if(!value || value.length < 6){
       return Promise.reject()
     }else{
       return Promise.resolve()

@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Modal } from 'antd';
 
 import { signOut, getWeather } from '@/api';
-import { getGeolocation } from '@/api/openWeather';
+import { getStorage } from '@/utils/storageUtil.js';
 import {menuList} from '@/config/menuList';
 import './Header.less';
 
 const Header = () => {
+  const [ user, updateUser ] = useState({ displayName: ''})
   // 取得目前時間
   const timeOptions = {
     hour12: false,
@@ -43,6 +44,11 @@ const Header = () => {
     }
   }, [])
 
+  useEffect(()=>{
+    const user = getStorage();
+    updateUser(user)
+  }, [])
+
   // 取得目前路由並得到目前所在頁面的 title
   const Location = useLocation()
   const [title, updateTitle] = useState('首頁')
@@ -64,7 +70,7 @@ const Header = () => {
   }, [Location])
 
   const Navigate = useNavigate();
-  const signOut=(e)=>{
+  const logOut=(e)=>{
     e.preventDefault();
     Modal.confirm({
       content: '確定要登出嗎？',
@@ -81,8 +87,8 @@ const Header = () => {
     return (
     <div className="header">
       <div className="header-top">
-        <span>歡迎, admin</span>
-        <Button type="link" size="large" onClick={signOut}>退出</Button>
+        <span>歡迎, { user.displayName }</span>
+        <Button type="link" size="large" onClick={logOut}>退出</Button>
       </div>
       <hr />
       <div className="header-bottom">

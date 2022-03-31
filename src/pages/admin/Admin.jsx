@@ -1,15 +1,9 @@
 import React, { useState ,useEffect, Fragment,  } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 
-import { auth } from '@/api/firbaseInit';
-import {
-  onAuthStateChanged,
-} from 'firebase/auth';
-
-import {saveStorage, getStorage} from '@/utils/storageUtil';
-
 import { Layout, message } from 'antd';
 
+import { getStorage } from '@/utils/storageUtil.js'
 import SideBar from '@/components/admin/SideBar';
 import Header from '@/components/admin/Header';
 import './Admin.less';
@@ -23,34 +17,25 @@ message.config({
 })
 
 function Admin() {
-  const [user, updateUser] = useState(getStorage());
-  const [loading, updateLoading] = useState(true);
+  const [ loading, updateLoading ] = useState(true);
+  const user = getStorage();
 
   const Navigate = useNavigate();
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
+
   useEffect(() => {
-    // 如果直接進入到 / 就會被重定向到 /home
-    if(pathname==='/') {
-      Navigate('/home', { replace: true })
-    }
-    // 驗證使用者登錄狀態
-    // 給 async 函數一個變量名以便清空。
-    let vadiateUser = onAuthStateChanged(auth, (user)=>{
-      if(!user){
-        saveStorage(null);
-        Navigate('/login', { replace: true })
-      }else{
-        saveStorage(user);
-      }
-      updateUser(getStorage())
+    if(user && user.authority.includes(pathname)) {
+      // 如果直接進入到 / 就會被重定向到 /home
+      Navigate(pathname)
       updateLoading(false)
-    })
-    return () => {
-      // 清空 async ，否則可能造成內存洩漏
-      vadiateUser = null;
-      message.error('請重新登入');
     }
-  }, []);
+    else if(user && !user.authority.includes(pathname)){
+      Navigate(-1, { replace: true })
+    }
+    else {
+      Navigate('/login', { replace: true })
+    }
+  }, [pathname]);
 
   return (
     <Fragment>
