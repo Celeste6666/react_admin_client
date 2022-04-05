@@ -1,12 +1,21 @@
 import React, { useReducer, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Card, Space, Button, Table, Modal, Form, message } from 'antd';
 
-import { getUserList, createUser, getRoleList, changeUser, removeUser } from '@/api';
+import {
+  getUserList,
+  createUser,
+  getRoleList,
+  changeUser,
+  removeUser,
+  getSingleRoleList
+} from '@/api';
+import { updateCurrentUser } from '@/redux/actions';
 import AddForm from '@/components/user/AddForm';
 import { PAGE_SIZE } from '@/utils/constant';
 
 
-const User = () => {
+const User = (props) => {
   const [ form ] = Form.useForm();
   const [{
     loading,
@@ -67,9 +76,21 @@ const User = () => {
 
   const updateUser = async () => {
     const data = form.getFieldsValue(true);
-    console.log(data)
     const { ok } = await changeUser({ id: selectUserId, data });
-    if(ok){
+    if(ok){      
+      const { currentUser, currentUser: { currentId, currentRoleId} } = props;
+      const { roleId } = data;
+      // 如果正在修改的這個 selectUserId 跟登陸的使用者相同就必須更新內存的資料
+      // 判斷 roleId 是否不同，不同的話要再去取得 role 資料
+      if( selectUserId === currentId && roleId !== currentRoleId){
+        const roleRes = await getSingleRoleList(data.roleId);
+        if( roleRes.ok ){
+          updateCurrentUser({...currentUser, ...data, ...roleRes.role })
+        }
+      }
+      else if( selectUserId === currentId) {
+        updateCurrentUser({...currentUser, ...data })
+      }
       // 關閉 Modal 並清空儲存選中的selectUserId的值
       setState({ isModalVisible: false, selectUserId: '' });
     }
@@ -159,4 +180,9 @@ const User = () => {
   )
 }
 
-export default User;
+export default connect(
+  state => ({ currentUser: state.currentUser,}),
+  {
+    updateCurrentUser,
+  }
+)(User);

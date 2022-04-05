@@ -52,7 +52,7 @@ const ProductItem = () => {
       <Item>
         <Title level={5}>商品照片：</Title>
         {
-          picture.map(pic => (<img src={pic.url} />))
+          picture.map(pic => (<img key={pic.url} src={pic.url} />))
         }
       </Item>
       <Item>

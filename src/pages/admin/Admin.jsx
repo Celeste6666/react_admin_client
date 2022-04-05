@@ -1,9 +1,9 @@
 import React, { useState ,useEffect, Fragment,  } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-
+import { connect } from 'react-redux';
 import { Layout, message } from 'antd';
 
-import { getStorage } from '@/utils/storageUtil.js'
+
 import SideBar from '@/components/admin/SideBar';
 import Header from '@/components/admin/Header';
 import './Admin.less';
@@ -16,20 +16,22 @@ message.config({
   maxCount: 1,
 })
 
-function Admin() {
+function Admin(props) {
   const [ loading, updateLoading ] = useState(true);
-  const user = getStorage();
+  // const user = getStorage();
+  const { currentUser: user } = props;
 
   const Navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if(user && user.authority.includes(pathname)) {
+    const pathnameSlice = pathname === '/'? '/home' : pathname.match(/[\\|/][A-Z0-9]+/gi)[0];
+    if(user && user.authority.includes(pathnameSlice)) {
       // 如果直接進入到 / 就會被重定向到 /home
       Navigate(pathname)
       updateLoading(false)
     }
-    else if(user && !user.authority.includes(pathname)){
+    else if(user && !user.authority.includes(pathnameSlice)){
       Navigate(-1, { replace: true })
     }
     else {
@@ -59,4 +61,6 @@ function Admin() {
   )
 }
 
-export default Admin;
+export default connect(
+  state => ({ currentUser: state.currentUser,}),
+)(Admin);

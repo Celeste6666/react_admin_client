@@ -1,16 +1,18 @@
 import React,{ Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { Menu } from 'antd';
 
 // 利用陣列讓 menu 的程式碼變得比較簡潔
 import { menuList } from '@/config/menuList';
 import { getStorage } from '@/utils/storageUtil';
+import { updateHeadTitle } from '@/redux/actions';
 import Logo from '@/assets/images/logo.png';
 import './SideBar.less';
 
 const {SubMenu, Item} = Menu;
 
-const Sidebar = () => {
+const Sidebar = (props) => {
   const { pathname } = useLocation();
   const user = getStorage();
 
@@ -35,16 +37,20 @@ const Sidebar = () => {
   const [openKey, updateOpenKey] = useState('');
 
   const findOpenKey = () => {
+    // connect(mapStateToProps, mapDispatchToProps)(UI 模組)，模組就可以透過props 取得 redux 資料
+    // 透過監視 pathname 的更新來更改 store 的 HeadTitle 的值
     menuList.forEach(menu => {
-      // 如果 menu.key 的內容包含了 pathname 的內容，該 menu 就是被選中的 ==> 針對父物件
+      // 如果 pathname 的內容包含了 menu.key 的內容，該 menu 就是被選中的 ==> 針對父物件
       if (pathname.includes(menu.key)){
         updateSelectedKey(menu.key);
+        props.updateHeadTitle(menu.title)
       }
       // 判斷 pathname 是否包含子物件 key
       else if(!pathname.includes(menu.key) && menu.children) {
         menu.children.forEach(child => {
           if (pathname.includes(child.key)){
             updateOpenKey(menu.key);
+            props.updateHeadTitle(child.title)
             updateSelectedKey(child.key);
           }
         })
@@ -87,4 +93,11 @@ const Sidebar = () => {
   );
 }
 
-export default Sidebar;
+export default connect(
+  (state) => ({
+    headTtitle: state.headTtitle
+  }),
+  {
+    updateHeadTitle
+  }
+)(Sidebar);

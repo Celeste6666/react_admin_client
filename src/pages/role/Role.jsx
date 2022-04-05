@@ -1,14 +1,16 @@
 import React, { useEffect, useReducer } from 'react';
+import { connect } from 'react-redux';
+
 import { Card, Space, Button, Table, Modal, Form, Input, message } from 'antd';
 
 import AuthForm from '@/components/role/AuthForm';
 import { getRoleList, createRole, changeRoleAuthority } from '@/api';
-import { getStorage } from '@/utils/storageUtil';
+// import { getStorage } from '@/utils/storageUtil';
 import { PAGE_SIZE } from '@/utils/constant';
 
 const { Item } = Form;
 
-const Role = () => {
+const Role = (props) => {
   const [ form ] = Form.useForm();
   const [{
     loading,
@@ -83,13 +85,15 @@ const Role = () => {
       setState({modalLoading: false, isAuthModalVisible: false});
       return
     };
-    const user = getStorage();
-    const res = await changeRoleAuthority({ id: role.id, authority: checkedKeys, authorizer: user.displayName });
-    if(res.ok) {
+    // const user = getStorage();
+    const { currentUser: user } = props;
+    const { ok, authorization_At} = await changeRoleAuthority({ id: role.id, authority: checkedKeys, authorizer: user.displayName });
+    if(ok) {
       const newRoleList = roleList.map(item => {
         if(item.id === role.id) {
           item.authority = checkedKeys;
           item.authorizer = user.displayName;
+          item.authorization_At = authorization_At;
         }
         return item;
       })
@@ -122,6 +126,7 @@ const Role = () => {
       title: '授權人',
       dataIndex: 'authorizer',
       key: 'authorizer',
+      render:(text, record, index) => text
     },
   ];
 
@@ -162,4 +167,8 @@ const Role = () => {
   );
 }
 
-export default Role;
+export default connect(
+  (state) => ({
+    currentUser: state.currentUser,
+  })
+)(Role);
