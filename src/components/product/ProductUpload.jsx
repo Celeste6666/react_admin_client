@@ -2,10 +2,10 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Upload, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { removeProductPicture } from '@/api'
+import { removeProductPicture, updateSingleProduct } from '@/api'
 
 const ProductUpload = props => {
-  const { fileList, updateFileList } = props;
+  const { fileList, updateFileList, productId } = props;
 
   // 添加圖片
   const addFile = ({file}) => {
@@ -27,9 +27,10 @@ const ProductUpload = props => {
   }
 
   // 刪除圖片
-  const updateNewFile = (removedFile) => {
+  const updateNewFile = async (removedFile) => {
     const newFileList = fileList.filter(file => file.uid !== removedFile.uid);
     updateFileList(newFileList);
+    return newFileList;
   }
 
   const onRemove = async(removedFile) => {
@@ -39,7 +40,11 @@ const ProductUpload = props => {
     if (!removedFile.file) {
       const res = await removeProductPicture(removedFile.name);
       if(res.ok) {
-        updateNewFile(removedFile);
+        const newFileList = updateNewFile(removedFile);
+        const pictureRes = await updateSingleProduct({id: productId, data: { picture: newFileList }})
+        if(pictureRes.ok){
+          message.success('成功刪除圖片！')
+        }
       }
     }
     // 如果該圖片還沒上傳到 storage 就直接刪除

@@ -52,7 +52,6 @@ export default function ajax(route, value={}) {
       .then((userDoc) => {
         const data = userDoc.data()
         saveData = {id: userDoc.id, ...data};
-        console.log(data)
         return getDoc(doc(db, 'role', data.roleId))
       })
       .then((roleDoc) => {
@@ -61,8 +60,7 @@ export default function ajax(route, value={}) {
         resolve({ ok: true });
       })
       .catch(err=>{
-        reject('登入失敗')
-        console.log(err)
+        resolve({ ok: false });
         message.error('用戶名或密碼錯誤，請重新輸入')
       })
     }
@@ -292,6 +290,13 @@ export default function ajax(route, value={}) {
         message.error('無法取得商品資料，請刷新頁面。')
       })
     }
+    // 取得特定角色資料
+    else if(route === '/role/single'){
+      getDoc(db, 'role', value)
+      .then(doc => {
+        resolve({ ok: true, role: doc.data()})
+      })
+    }
     // 創建角色
     else if(route === '/role/add') {
       addDoc(collection(db, 'role'), {
@@ -311,14 +316,14 @@ export default function ajax(route, value={}) {
     // 更新角色權限
     else if(route === '/role/update/authority') {
       const { id, authority, authorizer } = value;
+      const authorization_At = Timestamp.fromDate(new Date());
       updateDoc(doc(db, 'role', id), {
-        authorization_At: Timestamp.fromDate(new Date()),
-        authorizer: '',
+        authorization_At,
+        authorizer,
         authority,
-        authorizer
       })
       .then(() => {
-        resolve({ok: true});
+        resolve({ok: true, authorization_At});
       })
       .catch(() => {
         message.error('出現錯誤，請刷新頁面。')
@@ -366,7 +371,6 @@ export default function ajax(route, value={}) {
     // 修改使用者
     else if(route === '/user/update') {
       const { id, data: {displayName, email, phoneNumber, roleId} } = value;
-      let saveData;
       updateDoc(doc(db, 'user', id), {
         displayName,
         email,
@@ -374,29 +378,7 @@ export default function ajax(route, value={}) {
         roleId
       })
       .then(() => {
-        const loginUser = getStorage();
-        // 如果正在修改的這個ID跟登陸的使用者相同就必須更新內存的資料
-        if (loginUser.id === id) {
-          saveData = {
-            ...loginUser,
-            displayName,
-            email,
-            phoneNumber,
-            roleId
-          }
-          message.warn('請刷新頁面！')
-          return getDoc(db, 'role', roleId)
-        }
-        else {
-          resolve({ ok: true });
-        }
-      })
-      .then((roleDoc) => {
-        saveData = {
-          ...saveData,
-          ...roleDoc.data()
-        };
-        saveStorage(saveData);
+        resolve({ ok: true });
       })
       .catch((err) => {
         message.error('發生錯誤，請重新修改！')

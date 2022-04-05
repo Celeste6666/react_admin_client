@@ -76,7 +76,6 @@ const ProductAddUpdate = props => {
     const newFileList = await uploadPictures();
     value.picture = newFileList;
     value.detail = draftToHtml(convertToRaw(editorContent.getCurrentContent()));
-    console.log(value)
     // 編輯原有商品頁面
     if(productId !== 'newProduct'){
       const res = await updateSingleProduct({id: productId, data: value})
@@ -144,7 +143,7 @@ const ProductAddUpdate = props => {
         <Cascader options={categoryOptions} />
       </Item>
       <Item name="picture" label="商品照片" >
-        <ProductUpload fileList={fileList} updateFileList={updateFileList} />
+        <ProductUpload productId={productId} fileList={fileList} updateFileList={updateFileList} />
       </Item>
       <Item name="detail" label="商品詳述">
         <ProductTextArea editorContent={editorContent} updateEditorContent={updateEditorContent} />

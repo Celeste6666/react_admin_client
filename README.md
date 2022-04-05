@@ -133,3 +133,19 @@
 在 React 中多次調用 useState() 去更改 state 的值，但也因此會去多次渲染頁面(調用一次 useState() 的更新資料就會重新渲染畫面。)
 
 解決方法： [使用 useState 多次渲染问题](https://juejin.cn/post/7042319659881742343)、[React Hooks useEffect 多个依赖批量操作](https://juejin.cn/post/6994085055559630879)。
+
+# 學習紀錄 07
+
+在 React Functional Component 中使用 redux ：
+
+1. 透過 react-redux 套件使 React 專案可以更方便快速的使用 redux 。
+2. 在入口文件(index.js)中透過 react-redux 的 <Provider store={使用的store}> 標籤將設置的 store 注入到專案中。
+3. 必須注意在完成第二步後，在 UI 模組中還不能直接使用 store 中的 state，必須透過 react-redux 的 connect(mapStateToProps,mapDispatchToProps)(UI 模組) 來讓 UI 模組能夠與 store 互通有無。
+4. 在模組中要取得 state 或 dispatch 都要通過各模組的 props 取得。
+
+關於 redux ：
+
+1. 在 redux 中的各個 reducer 通過 redux 的 combineReducers({ state 名: 對應的 reducer}) 結合。
+2. 透過 redux 的 createStore(reducers) 創建一個狀態管理庫(reducers 指的是第一步的 combineReducers)。
+3. 如果會用到異步 action 必須另外下載套件 redux-thunk，並透過 redux 中的 applyMiddleWare(thunk) 來讓該 store 使用 thunk ==> createStore(reducers, applyMiddleWare(thunk))
+4. 如果需要 redux 的工具管理要另外下載套件 redux-devtools-extension，並使用其中的 composeWithDevTools 來讓瀏覽器可以實時觀察 redux 變化 ==> createStore(reducers, composeWithDevTools(applyMiddleware(thunk)));

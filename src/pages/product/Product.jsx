@@ -56,12 +56,12 @@ const Product = () => {
       extra={
         productId ?
         '':
-        <Button type="primary" icon={<PlusOutlined />}>
-          <Link to={`/product/addUpdate/newProduct`}
+          <Link to="/product/addUpdate/newProduct"
           style={{color: 'white'}}>
-            添加商品
+            <Button type="primary" icon={<PlusOutlined /> } >
+              添加商品
+            </Button>
           </Link>
-        </Button>
       }
     >
       {

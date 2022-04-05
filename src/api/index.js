@@ -46,6 +46,9 @@ export const updateSingleProduct = async (value) => await ajax('/product/single/
 // 取得角色資料
 export const getRoleList = async () => await ajax('/role');
 
+// 取得特定角色資料
+export const getSingleRoleList = async (id) => await ajax('/role/single', id);
+
 // 創建角色資料
 export const createRole = async (name) => await ajax('/role/add', name);
 
