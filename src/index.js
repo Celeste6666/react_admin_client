@@ -9,7 +9,7 @@ import '@/index.less';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/react_admin_client" >
       <Provider store={store}>
         <App />
       </Provider>

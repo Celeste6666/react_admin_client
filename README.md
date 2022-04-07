@@ -1,3 +1,5 @@
+網站參考：[https://celeste6666.github.io/react_admin_client/](https://celeste6666.github.io/react_admin_client/)。
+
 # 技術使用
 
 - react-create-app：專案管理。
@@ -149,3 +151,52 @@
 2. 透過 redux 的 createStore(reducers) 創建一個狀態管理庫(reducers 指的是第一步的 combineReducers)。
 3. 如果會用到異步 action 必須另外下載套件 redux-thunk，並透過 redux 中的 applyMiddleWare(thunk) 來讓該 store 使用 thunk ==> createStore(reducers, applyMiddleWare(thunk))
 4. 如果需要 redux 的工具管理要另外下載套件 redux-devtools-extension，並使用其中的 composeWithDevTools 來讓瀏覽器可以實時觀察 redux 變化 ==> createStore(reducers, composeWithDevTools(applyMiddleware(thunk)));
+
+# 學習紀錄 08
+
+在構建完專案( `npm run build` )並部屬到 GitHub Pages 上後，發現並無法正確打開網頁，以下幾點是解決方法：
+
+- 構建完的專案 .js 跟 .css 檔案路徑錯誤：
+  在仔細觀察後發現是在讀取 .js 跟 .css 檔案時發現錯誤了。
+  在構建後，會發現引入的 .js 跟 .css 檔案，都是以 `/static/...css|js`，但在頁面中打開會發現引入的路徑為 `https://celeste6666.github.io/static/...css|js`，但正確路徑應該要為 `https://celeste6666.github.io/react_admin_client/static/...css|js` 才對，所以可以透過在 package.json 中加入 `homepage` 屬性來幫助檔案得到正確連接路徑。
+
+  [【小技巧】package.json 中 homepage 属性的作用](https://segmentfault.com/a/1190000021875558)。
+
+  [GitHub Pages](https://create-react-app.dev/docs/deployment/#github-pages)
+
+  - 打開網頁發現是是空白畫面：
+    1. 在 /public 中新增 404.html。
+    2. 在 /public/index.html 中一段程式碼 ↓
+    ```
+    <!-- Start Single Page Apps for GitHub Pages -->
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      // This script checks to see if a redirect is present in the query string,
+      // converts it back into the correct url and adds it to the
+      // browser's history using window.history.replaceState(...),
+      // which won't cause the browser to attempt to load the new url.
+      // When the single page app is loaded further down in this file,
+      // the correct url will be waiting in the browser's history for
+      // the single page app to route accordingly.
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
+    <!-- End Single Page Apps for GitHub Pages -->
+    ```
+
+  3. 在 /src/index.js 中 React Router 的 BrowserRouter 標籤必須加入 `basename="/github-repoName"` 屬性。
+     <BrowserRouter basename="/react_admin_client">...</BrowserRouter>
+
+  [spa-github-pages](https://github.com/rafgraph/spa-github-pages)
