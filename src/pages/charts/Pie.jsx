@@ -1,11 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Card, Button } from 'antd';
+import { Pie } from '@ant-design/plots';
 
-const Pie = () => {
+const ChartsPie = () => {
+
+  const [data, updateDate] = useState([
+    {
+      type: '分类一',
+      value: 27,
+    },
+    {
+      type: '分类二',
+      value: 25,
+    },
+    {
+      type: '分类三',
+      value: 18,
+    },
+    {
+      type: '分类四',
+      value: 15,
+    },
+    {
+      type: '分类五',
+      value: 10,
+    },
+    {
+      type: '其他',
+      value: 5,
+    },
+  ]);
+  const config = {
+    appendPadding: 10,
+    data,
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.9,
+    label: {
+      type: 'inner',
+      offset: '-30%',
+      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+      style: {
+        fontSize: 14,
+        textAlign: 'center',
+      },
+    },
+    interactions: [
+      {
+        type: 'element-active',
+      },
+    ],
+  };
+
   return (
-    <div>
-      我是 Pie
-    </div>
+    <Card title={<Button  type="primary" disabled>更新</Button>}>
+    <Card name="inner" title="柱狀圖一">
+      <Pie {...config} />
+    </Card>
+  </Card>
   );
 }
 
-export default Pie;
+export default ChartsPie;
