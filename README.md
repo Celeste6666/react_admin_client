@@ -197,6 +197,6 @@
     ```
 
   3. 在 /src/index.js 中 React Router 的 BrowserRouter 標籤必須加入 `basename="/github-repoName"` 屬性。
-     <BrowserRouter basename="/react_admin_client">...</BrowserRouter>
+     `<BrowserRouter basename="/react_admin_client">...</BrowserRouter>`
 
   [spa-github-pages](https://github.com/rafgraph/spa-github-pages)
