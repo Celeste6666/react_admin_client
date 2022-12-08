@@ -13,7 +13,7 @@ import {
 export const menuList = [
   {
     title: '首頁',
-    key: '/home',
+    key: '/',
     icon: <HomeOutlined />,
   },
   {

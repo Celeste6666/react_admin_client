@@ -5,7 +5,7 @@ export const authList = [
     children: [
       {
         title: '首頁',
-        key: '/home',
+        key: '/',
         disabled: false,
       },
       {

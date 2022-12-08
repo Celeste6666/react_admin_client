@@ -12,9 +12,8 @@ import './SideBar.less';
 
 const {SubMenu, Item} = Menu;
 
-const Sidebar = (props) => {
+const Sidebar = ({currentUser: user, headTtitle, updateHeadTitle}) => {
   const { pathname } = useLocation();
-  const user = getStorage();
 
   // 創建標籤，透過參數解構賦值使程式碼變簡潔
   const createMenuItem = ({key, title, icon}) => {
@@ -43,14 +42,14 @@ const Sidebar = (props) => {
       // 如果 pathname 的內容包含了 menu.key 的內容，該 menu 就是被選中的 ==> 針對父物件
       if (pathname.includes(menu.key)){
         updateSelectedKey(menu.key);
-        props.updateHeadTitle(menu.title)
+        updateHeadTitle(menu.title)
       }
       // 判斷 pathname 是否包含子物件 key
       else if(!pathname.includes(menu.key) && menu.children) {
         menu.children.forEach(child => {
           if (pathname.includes(child.key)){
             updateOpenKey(menu.key);
-            props.updateHeadTitle(child.title)
+            updateHeadTitle(child.title)
             updateSelectedKey(child.key);
           }
         })
@@ -70,7 +69,7 @@ const Sidebar = (props) => {
 
   return (
     <Fragment>
-      <Link to="/home" className="logo">
+      <Link to="/" className="logo">
         <img src={Logo} alt="" />
         <h1>後臺管理</h1>
       </Link>
@@ -92,10 +91,10 @@ const Sidebar = (props) => {
     </Fragment>
   );
 }
-
 export default connect(
   (state) => ({
-    headTtitle: state.headTtitle
+    headTtitle: state.headTtitle,
+    currentUser: state.currentUser
   }),
   {
     updateHeadTitle

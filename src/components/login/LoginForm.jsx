@@ -57,7 +57,7 @@ const LoginForm = (props) => {
           <Input placeholder="admin@admin.com"
           prefix={<UserOutlined style={{color: 'rgba(0,0,0,.45)'}} />} />
         </Form.Item>
-  
+
         <Form.Item
           name="password"
           rules={[
@@ -72,7 +72,7 @@ const LoginForm = (props) => {
             prefix={<LockOutlined style={{color: 'rgba(0,0,0,.45)'}} />}
           />
         </Form.Item>
-  
+
         <Button loading={btnLoading} type="primary" htmlType="submit" block >
           登入
         </Button>

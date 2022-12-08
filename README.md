@@ -1,5 +1,9 @@
 網站參考：[https://celeste6666.github.io/react_admin_client/](https://celeste6666.github.io/react_admin_client/)。
 
+# 更新紀錄
+
+透過 React Router 提供的新方法，來做路由驗證，並使用路由表來讓頁面更加精簡。
+
 # 技術使用
 
 - react-create-app：專案管理。
