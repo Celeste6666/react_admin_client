@@ -16,7 +16,7 @@ message.config({
   maxCount: 1,
 })
 
-function Admin() {
+export default function Admin() {
   return (
     <Fragment>
       <Layout className="admin" style={{minHeight: '100%'}}>
@@ -34,7 +34,3 @@ function Admin() {
     </Fragment>
   )
 }
-
-export default connect(
-  state => ({ currentUser: state.currentUser,}),
-)(Admin);

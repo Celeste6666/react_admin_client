@@ -56,8 +56,7 @@ export default function ajax(route, value={}) {
       })
       .then((roleDoc) => {
         saveData = {...saveData, ...roleDoc.data()}
-        saveStorage(saveData);
-        resolve({ ok: true });
+        resolve({ ok: true, data: saveData });
       })
       .catch(err=>{
         resolve({ ok: false });

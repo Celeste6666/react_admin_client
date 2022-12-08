@@ -19,7 +19,8 @@ const LoginForm = (props) => {
     if(res.ok){
       // 數據經 Firebase Auth 驗證成功後
       message.success('登入成功');
-      props.updateCurrentUser(getStorage());
+      const curUser = res.data;
+      props.updateCurrentUser(curUser);
       updateBtnLoading(false);
       navigate('/', { replace: true });
     }

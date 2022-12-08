@@ -5,7 +5,6 @@ import { Menu } from 'antd';
 
 // 利用陣列讓 menu 的程式碼變得比較簡潔
 import { menuList } from '@/config/menuList';
-import { getStorage } from '@/utils/storageUtil';
 import { updateHeadTitle } from '@/redux/actions';
 import Logo from '@/assets/images/logo.png';
 import './SideBar.less';
@@ -17,6 +16,7 @@ const Sidebar = ({currentUser: user, headTtitle, updateHeadTitle}) => {
 
   // 創建標籤，透過參數解構賦值使程式碼變簡潔
   const createMenuItem = ({key, title, icon}) => {
+    console.log("@", user)
     if(user.authority.includes(key)){
       return (
         <Item key={key} icon={icon}>

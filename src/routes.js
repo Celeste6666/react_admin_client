@@ -1,4 +1,6 @@
-import { redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import {store} from "@/redux/store";
+import {updateCurrentUser} from "@/redux/actions"
 import App from '@/App';
 import Login from '@/pages/login/Login';
 import Admin from '@/pages/admin/Admin';
@@ -29,16 +31,18 @@ export default [
         // 驗證使用者登錄狀態
         loader: async () => {
           onAuthStateChanged(auth, (user) => {
-            console.log(user);
-            if (!user.accessToken) {
+            if (!user) {
               saveStorage(null);
-              return redirect('/login');
+              store.dispatch(updateCurrentUser(null))
+              return new Error("錯誤");
             } else {
+              saveStorage(user.accessToken)
               return user.accessToken;
             }
           });
           return null;
         },
+        errorElement: <Navigate to="/login" />,
         children: [
           {
             path: '/',

@@ -2,7 +2,9 @@
 
 # 更新紀錄
 
-透過 React Router 提供的新方法，來做路由驗證，並使用路由表來讓頁面更加精簡。
+1. 透過 React Router 提供的新方法，來做路由驗證，並使用路由表來讓頁面更加精簡。
+2. 將使用者的資料存在 redux 中，而非 Storage 中。
+3. 透過 redux-persist 實現緩存(刷新後 redux 資料仍可存在)。
 
 # 技術使用
 
@@ -13,6 +15,7 @@
 - Firebase Auth：使用者資料庫。
 - Firebase Firestore：商品、種類資料庫。
 - Firebase Storage：儲存圖片用。
+- redux-persist: redux 緩存用。
 
 # 學習紀錄 01
 
