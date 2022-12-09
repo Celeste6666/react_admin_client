@@ -23,7 +23,6 @@ const User = (props) => {
     roleList,
     userList,
     isModalVisible,
-    user,
     selectUserId
   }, setState ] = useReducer((pre, next) => ({...pre, ...next}), {
     loading: true,
@@ -35,7 +34,7 @@ const User = (props) => {
     selectUserId: '',
   });
 
-  // 取得所有 role 名及 id 
+  // 取得所有 role 名及 id
   // 取得所有使用者資料
   let getUserArray = async() => {
     const roleList = await getRoleList();
@@ -77,7 +76,7 @@ const User = (props) => {
   const updateUser = async () => {
     const data = form.getFieldsValue(true);
     const { ok } = await changeUser({ id: selectUserId, data });
-    if(ok){      
+    if(ok){
       const { currentUser, currentUser: { currentId, currentRoleId} } = props;
       const { roleId } = data;
       // 如果正在修改的這個 selectUserId 跟登陸的使用者相同就必須更新內存的資料
@@ -114,7 +113,7 @@ const User = (props) => {
   const transformTime = (time) => {
     return new Date(time).toLocaleString('zh-TW', {hour12: false}).replaceAll('/','-')
   }
-  
+
   const columns = [
     {
       title: '用戶名',

@@ -16,13 +16,14 @@
       // with Internet Explorer (it is currently > 512 bytes)
 
       // If you're creating a Project Pages site and NOT using a custom domain,
-      // then set pathSegmentsToKeep to 1 (enterprise users may need to set it to > 1).
+      // then set segmentCount to 1 (enterprise users may need to set it to > 1).
       // This way the code will only replace the route part of the path, and not
       // the real directory in which the app resides, for example:
       // https://username.github.io/repo-name/one/two?a=b&c=d#qwe becomes
       // https://username.github.io/repo-name/?/one/two&a=b~and~c=d#qwe
-      // Otherwise, leave pathSegmentsToKeep as 0.
-      var pathSegmentsToKeep = 0;
+      // Otherwise, leave segmentCount as 0.
+      // 處理方式: 因為前端路由導致的錯誤資源加載，就會導向 404.html，之後透過404.html及index.html內代碼(有點類似將這個錯誤的網址改成 hashRouter 模式，只是加上的是/?p/， 讓來讓瀏覽器知道 /?p 後的 /login 不是資源的位址)，讓瀏覽器能夠有效辨識出要正確加載的資源位址(/react-admin-client)，之後透過 window.location.replace 替換到這個 404 頁面導向經過 404.html 訂好的 url 網址
+      var segmentCount = 1;
 
       var l = window.location;
       l.replace(
@@ -32,17 +33,12 @@
           (l.port ? ':' + l.port : '') +
           l.pathname
             .split('/')
-            .slice(0, 1 + pathSegmentsToKeep)
+            .slice(0, 1 + segmentCount)
             .join('/') +
-          '/?/' +
-          l.pathname
-            .slice(1)
-            .split('/')
-            .slice(pathSegmentsToKeep)
-            .join('/')
-            .replace(/&/g, '~and~') +
-          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-          l.hash
+          '/?p=/' +
+          l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+          (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash,
       );
     </script>
   </head>

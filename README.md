@@ -6,6 +6,12 @@
 2. 將使用者的資料存在 redux 中，而非 Storage 中。
 3. 透過 redux-persist 實現緩存(刷新後 redux 資料仍可存在)。
 
+## 404.html 的重要性
+https://github.com/aszx87410/blog/issues/48
+
+在 github.io 中刷新無法顯示頁面的方法，看學習紀錄 08:
+處理方式: 因為前端路由導致的錯誤資源加載，就會導向 404.html，之後透過404.html及index.html內代碼(有點類似將這個錯誤的網址改成 hashRouter 模式，只是加上的是/?p/， 讓來讓瀏覽器知道 /?p 後的 /login 不是資源的位址)，讓瀏覽器能夠有效辨識出要正確加載的資源位址(/react-admin-client)，之後透過 window.location.replace 替換到這個 404 頁面導向經過 404.html 訂好的 url 網址
+
 # 技術使用
 
 - react-create-app：專案管理。
@@ -172,6 +178,7 @@
   [GitHub Pages](https://create-react-app.dev/docs/deployment/#github-pages)
 
   - 打開網頁發現是是空白畫面：
+    解決辦法: [https://github.com/rafgraph/spa-github-pages](https://github.com/rafgraph/spa-github-pages)
     1. 在 /public 中新增 404.html。
     2. 在 /public/index.html 中一段程式碼 ↓
     ```

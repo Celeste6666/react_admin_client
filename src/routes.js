@@ -1,6 +1,5 @@
 import { redirect } from 'react-router-dom';
 import { store } from '@/redux/store';
-import { updateCurrentUser } from '@/redux/actions';
 import App from '@/App';
 import Login from '@/pages/login/Login';
 import Admin from '@/pages/admin/Admin';
@@ -93,4 +92,8 @@ export default [
       },
     ],
   },
+  {
+    path: "/*",
+    element: <Login />
+  }
 ];
