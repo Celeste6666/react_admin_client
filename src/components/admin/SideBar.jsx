@@ -16,8 +16,7 @@ const Sidebar = ({currentUser: user, headTtitle, updateHeadTitle}) => {
 
   // 創建標籤，透過參數解構賦值使程式碼變簡潔
   const createMenuItem = ({key, title, icon}) => {
-    console.log("@", user)
-    if(user.authority.includes(key)){
+    if(user && user.authority.includes(key)){
       return (
         <Item key={key} icon={icon}>
           <Link to={key}>{title}</Link>

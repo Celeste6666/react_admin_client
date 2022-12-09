@@ -1,6 +1,6 @@
-import { Navigate } from 'react-router-dom';
-import {store} from "@/redux/store";
-import {updateCurrentUser} from "@/redux/actions"
+import { redirect } from 'react-router-dom';
+import { store } from '@/redux/store';
+import { updateCurrentUser } from '@/redux/actions';
 import App from '@/App';
 import Login from '@/pages/login/Login';
 import Admin from '@/pages/admin/Admin';
@@ -17,7 +17,7 @@ import Bar from '@/pages/charts/Bar';
 
 import { auth } from '@/api/firbaseInit';
 import { onAuthStateChanged } from 'firebase/auth';
-import { saveStorage } from '@/utils/storageUtil';
+import { saveStorage, removeStorage } from '@/utils/storageUtil';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
@@ -29,20 +29,19 @@ export default [
         path: '/',
         element: <Admin />,
         // 驗證使用者登錄狀態
-        loader: async () => {
+        loader: () => {
+          if (store.getState
+().currentUser === null) {
+            removeStorage();
+            return redirect('/login');
+          }
           onAuthStateChanged(auth, (user) => {
-            if (!user) {
-              saveStorage(null);
-              store.dispatch(updateCurrentUser(null))
-              return new Error("錯誤");
-            } else {
-              saveStorage(user.accessToken)
-              return user.accessToken;
+            if (user) {
+              saveStorage(user.accessToken);
             }
           });
           return null;
         },
-        errorElement: <Navigate to="/login" />,
         children: [
           {
             path: '/',

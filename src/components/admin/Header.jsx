@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Button, Modal } from 'antd';
-
+import {updateCurrentUser} from "@/redux/actions"
 import { signOut, getWeather } from '@/api';
-import { getStorage } from '@/utils/storageUtil.js';
-import { updateHeadTitle } from '@/redux/actions';
 // import {menuList} from '@/config/menuList';
 import './Header.less';
 
@@ -75,6 +73,7 @@ const Header = (props) => {
       maskClosable: true,
       onOk(){
         signOut();
+        props.updateCurrentUser(null);
         Navigate('/login', { replace: true })
       },
     })
@@ -83,7 +82,7 @@ const Header = (props) => {
     return (
     <div className="header">
       <div className="header-top">
-        <span>歡迎, { props.currentUser.displayName }</span>
+        <span>歡迎, { props.currentUser?props.currentUser.displayName: "" }</span>
         <Button type="link" size="large" onClick={logOut}>退出</Button>
       </div>
       <hr />
@@ -109,5 +108,7 @@ export default connect(
   (state) => ({
     headTitle: state.headTitle,
     currentUser: state.currentUser,
-  })
+  }), {
+    updateCurrentUser
+  }
 )(Header);

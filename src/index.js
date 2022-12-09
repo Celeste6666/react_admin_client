@@ -5,7 +5,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import routes from "@/routes";
 import '@/index.less';
 
-const router = createBrowserRouter(routes);
+// basename 屬性會協助 router 以 /react_admin_client做url前綴做
+const router = createBrowserRouter(routes, {
+  basename:"/react_admin_client"
+});
 
 ReactDOM.render(
   <React.StrictMode>
